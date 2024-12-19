@@ -1,6 +1,7 @@
 import { Box, Center, Heading, Text } from "@chakra-ui/react";
 import styles from "./page.module.css";
 import PersonalizationTester from "@/components/sitecore/personalizationTester";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -14,7 +15,9 @@ export default function Home() {
             </Text>
           </Center>
         </Heading>
-        <PersonalizationTester />
+        <Suspense>
+          <PersonalizationTester />
+        </Suspense>
       </Box>
       <Box className={styles.footer}></Box>
     </Box>
