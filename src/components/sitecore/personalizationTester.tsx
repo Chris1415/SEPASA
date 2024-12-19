@@ -5,6 +5,7 @@ import "@sitecore-cloudsdk/events/browser";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ExperienceParams, LayoutServiceData } from "@/types/sitecore";
+import { Button } from "@/components/ui/button";
 import {
   executePersonalize,
   GetFlowDefinition,
@@ -38,6 +39,9 @@ import {
   PersonalizationComparison,
   personalizeLayout,
 } from "@/services/PersonalizationService";
+import { pageView } from "@sitecore-cloudsdk/events/browser";
+import { getGuestId } from "@sitecore-cloudsdk/core/browser";
+// import { getGuestId, getBrowserId } from "@sitecore-cloudsdk/core/browser";
 
 export default function PersonalizationTester() {
   const query = useSearchParams();
@@ -53,9 +57,23 @@ export default function PersonalizationTester() {
     useState<ListCollection<{ label: string; value: string }>>();
   const [allRoutes, setAllRoutes] =
     useState<ListCollection<{ label: string; value: string }>>();
+  const [allRoutesForCdp, setAllRoutesForCdp] =
+    useState<ListCollection<{ label: string; value: string }>>();
   const [path, setPath] = useState<string>("/");
   const [language, setLanguage] = useState<string>("en");
   const [country, setCountry] = useState<string>("DE");
+  const [pathForEvent, setPathForEvent] = useState<string>("/");
+  const [guesId, setGuesId] = useState<string>();
+
+  function AddPathToViewEvents() {
+    pageView({
+      channel: "WEB",
+      currency: "USD",
+      page: pathForEvent,
+      language,
+      includeUTMParameters: true,
+    });
+  }
 
   useEffect(() => {
     async function GetSites() {
@@ -77,16 +95,27 @@ export default function PersonalizationTester() {
     async function GetRoutes() {
       const routes = await fetchSiteRoutes(siteName);
 
-      const mappedRoutes = createListCollection({
+      let mappedRoutes = createListCollection({
         items: routes.map((element) => {
           return {
-            label: element.routePath + " (" + element.route.name + ")",
+            label: element.route.name,
             value: element.routePath,
           };
         }),
       });
 
       setAllRoutes(mappedRoutes);
+
+      mappedRoutes = createListCollection({
+        items: routes.map((element) => {
+          return {
+            label: element.routePath,
+            value: element.route.name,
+          };
+        }),
+      });
+
+      setAllRoutesForCdp(mappedRoutes);
     }
 
     GetRoutes();
@@ -113,6 +142,12 @@ export default function PersonalizationTester() {
       .addEvents()
       .initialize();
     // *****
+
+    async function SetGuesId() {
+      setGuesId(await getGuestId());
+    }
+
+    SetGuesId();
 
     // ASYNC PART ****** //
     async function Personalize() {
@@ -271,7 +306,7 @@ export default function PersonalizationTester() {
                 <SelectContent p={2}>
                   {allRoutes?.items?.map((route) => (
                     <SelectItem item={route} key={route.value}>
-                      {route.label}
+                      {route.value} ({route.label})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -290,6 +325,9 @@ export default function PersonalizationTester() {
                 />
               </Field> */}
             </GridItem>
+          </SimpleGrid>{" "}
+          <hr />
+          <SimpleGrid columns={[1, null, 3]}>
             <GridItem p={4}>
               <SelectRoot
                 value={[country]}
@@ -305,19 +343,47 @@ export default function PersonalizationTester() {
                 <SelectContent p={2}>
                   {COUNTIRES.items.map((country) => (
                     <SelectItem item={country} key={country.value}>
-                      {country.label}
+                      {country.value} ({country.label})
                     </SelectItem>
                   ))}
                 </SelectContent>
               </SelectRoot>
+            </GridItem>
+            <GridItem p={4}>
+              <SelectRoot
+                value={[pathForEvent]}
+                onValueChange={(e) => {
+                  setPathForEvent(e.value.at(0) ?? "Home");
+                }}
+                mt={2}
+                collection={
+                  allRoutesForCdp ?? createListCollection({ items: [] })
+                }
+                size="md"
+              >
+                <SelectLabel>Add path to journey</SelectLabel>
+                <SelectTrigger>
+                  <SelectValueText p={2} placeholder="No path selected" />
+                </SelectTrigger>
+                <SelectContent p={2}>
+                  {allRoutesForCdp?.items?.map((route) => (
+                    <SelectItem item={route} key={route.value}>
+                      {route.value} ({route.label})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </SelectRoot>
+              <Button onClick={() => AddPathToViewEvents()}>Add</Button>
             </GridItem>
           </SimpleGrid>
         </div>
         <div></div>
       </div>
 
+      <hr />
+
       <SimpleGrid>
-        <GridItem columns={[1, null, 4]}>
+        <GridItem columns={[1, null, 5]}>
           <div>
             <Heading> Current Site </Heading>
             {siteName == null ? "No site active" : siteName}
@@ -334,8 +400,14 @@ export default function PersonalizationTester() {
             <Heading> Current Country </Heading>
             {country == null ? "No country active" : country}
           </div>
+          <div>
+            <Heading> CDP / P Guest ID </Heading>
+            {guesId}
+          </div>
         </GridItem>
       </SimpleGrid>
+
+      <hr />
 
       <div>
         <Heading> Available Variants({allVariants?.length}) </Heading>
@@ -348,6 +420,9 @@ export default function PersonalizationTester() {
 
         {chosenVariant == null ? "(No active variant found)" : chosenVariant}
       </div>
+
+      <hr />
+
       <div>
         <Heading>Standard Layout Response is:</Heading>
         <div>
