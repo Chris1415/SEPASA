@@ -3,7 +3,7 @@ import styles from "./page.module.css";
 import PersonalizationTester from "@/components/sitecore/personalizationTester";
 import { Suspense } from "react";
 
-export default function Home() {
+export default async function Home() {
   return (
     <Box p={14}>
       <Box className={styles.main}>

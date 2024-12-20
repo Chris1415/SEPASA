@@ -28,7 +28,9 @@ import {
 import { COUNTIRES, LANGUAGES } from "@/consts/sitecore";
 import {
   Center,
+  CheckboxGroup,
   createListCollection,
+  Fieldset,
   GridItem,
   Heading,
   ListCollection,
@@ -41,6 +43,8 @@ import {
 } from "@/services/PersonalizationService";
 import { pageView } from "@sitecore-cloudsdk/events/browser";
 import { getGuestId } from "@sitecore-cloudsdk/core/browser";
+import { Checkbox } from "./ui/checkbox";
+import { deleteCookie, getCookie } from "cookies-next";
 // import { getGuestId, getBrowserId } from "@sitecore-cloudsdk/core/browser";
 
 export default function PersonalizationTester() {
@@ -64,6 +68,7 @@ export default function PersonalizationTester() {
   const [country, setCountry] = useState<string>("DE");
   const [pathForEvent, setPathForEvent] = useState<string>("/");
   const [guesId, setGuesId] = useState<string>();
+  const [utmParams, setUtmParams] = useState<string[]>([]);
 
   function AddPathToViewEvents() {
     pageView({
@@ -73,6 +78,30 @@ export default function PersonalizationTester() {
       language,
       includeUTMParameters: true,
     });
+  }
+
+  async function ResetGuestId() {
+    deleteCookie("sc_5Q0eCEiytH8KmmQtcmiRUG_personalize");
+    deleteCookie("sc_5Q0eCEiytH8KmmQtcmiRUG");
+
+    CloudSDK({
+      sitecoreEdgeContextId: process.env.NEXT_PUBLIC_CONTEXTID ?? "",
+      siteName: siteName,
+      enableBrowserCookie: true,
+    })
+      .addPersonalize({
+        enablePersonalizeCookie: true,
+        webPersonalization: true,
+      })
+      .addEvents()
+      .initialize();
+
+    setTimeout(async () => {
+      const newGuestId = await getCookie("sc_5Q0eCEiytH8KmmQtcmiRUG_personalize");
+      if (newGuestId) {
+        setGuesId(newGuestId);
+      }
+    }, 1000);
   }
 
   useEffect(() => {
@@ -373,8 +402,39 @@ export default function PersonalizationTester() {
                   ))}
                 </SelectContent>
               </SelectRoot>
-              <Button onClick={() => AddPathToViewEvents()}>Add</Button>
+              <Button mt={2} width={"full"} onClick={() => AddPathToViewEvents()}>
+                Add
+              </Button>
+              <Button mt={2} width={"full"} onClick={() => ResetGuestId()}>
+                Reset Guest ID
+              </Button>
             </GridItem>
+            <Fieldset.Root display={"inline"} pt={6} pb={4} px={4}>
+              <CheckboxGroup
+                value={utmParams}
+                onValueChange={(e) => setUtmParams(e)}
+                defaultValue={[]}
+                name="utm_params"
+              >
+                <Fieldset.Legend fontSize="sm" mb="2">
+                  Select UTM Param
+                </Fieldset.Legend>
+                <Fieldset.Content display={"inline"}>
+                  <Checkbox p={2} value="utm_campaign">
+                    utm_campaign
+                  </Checkbox>
+                  <Checkbox p={2} value="utm_content">
+                    utm_content
+                  </Checkbox>
+                  <Checkbox p={2} value="utm_medium">
+                    utm_medium
+                  </Checkbox>
+                  <Checkbox p={2} value="utm_source">
+                    utm_source
+                  </Checkbox>
+                </Fieldset.Content>
+              </CheckboxGroup>
+            </Fieldset.Root>
           </SimpleGrid>
         </div>
         <div></div>
@@ -383,7 +443,7 @@ export default function PersonalizationTester() {
       <hr />
 
       <SimpleGrid>
-        <GridItem columns={[1, null, 5]}>
+        <GridItem columns={[1, null, 6]}>
           <div>
             <Heading> Current Site </Heading>
             {siteName == null ? "No site active" : siteName}
@@ -403,6 +463,10 @@ export default function PersonalizationTester() {
           <div>
             <Heading> CDP / P Guest ID </Heading>
             {guesId}
+          </div>
+          <div>
+            <Heading> UTM Params</Heading>
+            {utmParams.join("|")}
           </div>
         </GridItem>
       </SimpleGrid>
