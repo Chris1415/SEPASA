@@ -1,25 +1,20 @@
-import { Box, Center, Heading, Text } from "@chakra-ui/react";
 import styles from "./page.module.css";
 import PersonalizationTester from "@/components/sitecore/personalizationTester";
 import { Suspense } from "react";
 
 export default async function Home() {
   return (
-    <Box p={14}>
-      <Box className={styles.main}>
-        <Heading size={"3xl"}>
-          <Center>
-            (S)itecore (E)mbedded (P)ersonalization (T)esting (A)pplication{" "}
-            <Text pl={2} fontWeight={"bold"}>
-              (SEPTA)
-            </Text>
-          </Center>
-        </Heading>
+    <div className="m-12">
+      <div className={styles.main}>
+        <h1 className="text-3xl font-bold text-center pt-8">
+          (S)itecore (E)mbedded (P)ersonalization (T)esting
+          (A)pplication <span>(SEPTA)</span>
+        </h1>
         <Suspense>
           <PersonalizationTester />
         </Suspense>
-      </Box>
-      <Box className={styles.footer}></Box>
-    </Box>
+      </div>
+      <div className={styles.footer}></div>
+    </div>
   );
 }
