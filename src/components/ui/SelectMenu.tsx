@@ -29,17 +29,17 @@ export default function SelectMenu({
 }: SelectMenuProps) {
   return (
     <Listbox value={chosenValue} onChange={setChosenValue}>
-      <Label className="block text-sm/6 font-medium text-gray-900">
+      <Label className="block text-sm/6 font-medium text-gray-300">
         {headline}
       </Label>
       <div className="relative mt-2">
-        <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pl-3 pr-2 text-left text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+        <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-gray-900 py-1.5 pl-3 pr-2 text-left text-gray-300 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
           <span className="col-start-1 row-start-1 truncate pr-6">
             {chosenValue}
           </span>
           <ChevronUpDownIcon
             aria-hidden="true"
-            className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+            className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-300 sm:size-4"
           />
         </ListboxButton>
 

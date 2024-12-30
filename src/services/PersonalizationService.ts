@@ -30,6 +30,7 @@ export interface PersonalizationComparison {
 export function personalizeLayout(
   layout: LayoutServiceData,
   variantId: string,
+  componentsWithExperiences: ComponentRenderingWithExperiences[],
   personalizedComponents: PersonalizationComparison[],
   componentVariantIds?: string[]
 ): PlaceholdersData<string> | undefined {
@@ -53,6 +54,7 @@ export function personalizeLayout(
       personalizePlaceholder(
         placeholders[placeholder],
         [variantId, ...(componentVariantIds || [])],
+        componentsWithExperiences,
         personalizedComponents,
         metadataEditing
       );
@@ -70,6 +72,7 @@ export function personalizeLayout(
 export function personalizePlaceholder(
   components: Array<ComponentRendering | HtmlElementRendering>,
   variantIds: string[],
+  componentsWithExperiences: ComponentRenderingWithExperiences[],
   personalizedComponents: PersonalizationComparison[],
   metadataEditing?: boolean
 ): Array<ComponentRendering | HtmlElementRendering> {
@@ -84,6 +87,7 @@ export function personalizePlaceholder(
         return personalizeComponent(
           rendering as ComponentRenderingWithExperiences,
           variantIds,
+          componentsWithExperiences,
           personalizedComponents,
           metadataEditing
         ) as ComponentRendering | HtmlElementRendering;
@@ -100,6 +104,7 @@ export function personalizePlaceholder(
           personalizePlaceholder(
             placeholders[placeholder],
             variantIds,
+            componentsWithExperiences,
             personalizedComponents,
             metadataEditing
           );
@@ -120,9 +125,13 @@ export function personalizePlaceholder(
 export function personalizeComponent(
   component: ComponentRenderingWithExperiences,
   variantIds: string[],
+  componentsWithExperiences: ComponentRenderingWithExperiences[],
   personalizedComponents: PersonalizationComparison[],
   metadataEditing?: boolean
 ): ComponentRendering | null {
+  if (component?.experiences) {
+    componentsWithExperiences.push(component);
+  }
   // Check if we have a page/component experience matching any of the variants (there should be at most 1)
   const match = Object.keys(component.experiences).find((variantId) =>
     variantIds.includes(variantId)
@@ -145,10 +154,16 @@ export function personalizeComponent(
     // VARIANT IS HIDDEN
     if (metadataEditing) {
       const variant = transformToHiddenRenderingVariant(component);
-      personalizedComponents.push({ original: component, personalized: variant });
+      personalizedComponents.push({
+        original: component,
+        personalized: variant,
+      });
       component = variant;
     } else {
-      personalizedComponents.push({ original: component, personalized: variant });
+      personalizedComponents.push({
+        original: component,
+        personalized: variant,
+      });
       return null;
     }
   } else if (variant) {
@@ -168,6 +183,7 @@ export function personalizeComponent(
       component.placeholders[placeholder] = personalizePlaceholder(
         component.placeholders[placeholder],
         variantIds,
+        componentsWithExperiences,
         personalizedComponents
       );
     }

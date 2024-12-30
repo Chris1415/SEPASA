@@ -5,6 +5,7 @@ import "@sitecore-cloudsdk/events/browser";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+  ComponentRenderingWithExperiences,
   ExperienceParams,
   LayoutServiceData,
   Route,
@@ -31,15 +32,13 @@ import { getGuestId } from "@sitecore-cloudsdk/core/browser";
 import { deleteCookie, getCookie } from "cookies-next";
 import SelectMenu, { SelectMenuItem } from "../ui/SelectMenu";
 import CheckboxList, { CheckboxItem } from "../ui/CheckboxList";
-// import { getGuestId, getBrowserId } from "@sitecore-cloudsdk/core/browser";
+import DescriptionList from "../ui/DescriptionList";
 
 export default function PersonalizationTester() {
   const query = useSearchParams();
   const [allVariants, setAllVariants] = useState<string[] | null>();
   const [chosenVariant, setChosenVariant] = useState<string[] | null>();
   const [layoutData, setLayoutData] = useState<LayoutServiceData>();
-  //   const [personalizedLayoutData, setPersonalizedLayoutData] =
-  //     useState<LayoutServiceData>();
   const [personalizedComponents, setPersonalizedComponents] =
     useState<PersonalizationComparison[]>();
   const [siteName, setSiteName] = useState<string>("");
@@ -52,6 +51,8 @@ export default function PersonalizationTester() {
   const [guesId, setGuesId] = useState<string>();
   const [utmParams, setUtmParams] = useState<string[]>([]);
   const [readMore, setReadMore] = useState<boolean>();
+  const [componentsWithExperiences, setComponentsWithExperiences] =
+    useState<ComponentRenderingWithExperiences[]>();
 
   function AddPathToViewEvents() {
     pageView({
@@ -64,8 +65,9 @@ export default function PersonalizationTester() {
   }
 
   async function ResetGuestId() {
-    deleteCookie("sc_5Q0eCEiytH8KmmQtcmiRUG_personalize");
-    deleteCookie("sc_5Q0eCEiytH8KmmQtcmiRUG");
+    const cookieName = "sc_5Q0eCEiytH8KmmQtcmiRUG";
+    deleteCookie(cookieName + "_personalize");
+    deleteCookie(cookieName);
 
     CloudSDK({
       sitecoreEdgeContextId: process.env.NEXT_PUBLIC_CONTEXTID ?? "",
@@ -80,9 +82,7 @@ export default function PersonalizationTester() {
       .initialize();
 
     setTimeout(async () => {
-      const newGuestId = await getCookie(
-        "sc_5Q0eCEiytH8KmmQtcmiRUG_personalize"
-      );
+      const newGuestId = await getCookie(cookieName);
       if (newGuestId) {
         setGuesId(newGuestId);
       }
@@ -209,20 +209,28 @@ export default function PersonalizationTester() {
           setLayoutData(layoutData);
         }
 
-        if (identifiedVariantIds.length > 0) {
-          const personalizedComponents: PersonalizationComparison[] = [];
-          personalizeLayout(
-            layoutData,
-            identifiedVariantIds?.at(0) ?? "",
-            personalizedComponents,
-            []
-          );
-          // setPersonalizedLayoutData(layoutData);
-          setPersonalizedComponents(personalizedComponents);
-        } else {
-          // setPersonalizedLayoutData(undefined);
+        // if (identifiedVariantIds.length > 0) {
+        const personalizedComponents: PersonalizationComparison[] = [];
+        const componentsWithExperiences: ComponentRenderingWithExperiences[] = [];
+        personalizeLayout(
+          layoutData,
+          identifiedVariantIds?.at(0) ?? "",
+          componentsWithExperiences,
+          personalizedComponents,
+          []
+        );
+        setComponentsWithExperiences(componentsWithExperiences);
+
+        if (personalizedComponents.length == 0) {
           setPersonalizedComponents(undefined);
+        } else {
+          setPersonalizedComponents(personalizedComponents);
         }
+
+        // } else {
+        //   // setPersonalizedLayoutData(undefined);
+        //   setPersonalizedComponents(undefined);
+        // }
       }
 
       Personalize();
@@ -412,25 +420,27 @@ export default function PersonalizationTester() {
         <button
           onClick={() => setReadMore(!readMore)}
           type="button"
-          className="rounded m-2 mx-auto w-full bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="rounded m-2 mx-auto w-auto bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           {readMore ? "Read less" : "Read more"}
         </button>
+        <div>
+          <div className="overflow-hidden rounded-md shadow">
+            <ul role="list" className="divide-y divide-gray-200">
+              {componentsWithExperiences?.map((element) => {
+                return (
+                  <>
+                    <li key={element?.uid} className="py-4">
+                      <DescriptionList component={element} />
+                    </li>
+                  </>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
       </div>
-
-      <div>
-        <h2 className="text-1xl font-bold pt-8">
-          Personalized Layout Response:
-        </h2>
-        There is currently an issue replacing the real content with personalize
-        one
-        {/* <div>
-          {personalizedLayoutData == null
-            ? "... no data for " + path
-            : JSON.stringify(personalizedLayoutData, null, 2)}
-        </div> */}
-      </div>
-      <div>
+      <div className="mb-4">
         <h2 className="text-1xl font-bold pt-8">
           Personalized Components comparison
         </h2>

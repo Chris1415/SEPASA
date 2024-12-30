@@ -40,7 +40,7 @@ export default function CheckboxList({
   }
   return (
     <fieldset>
-      <div className="block text-sm/6 font-medium text-gray-900">
+      <div className="block text-sm/6 font-medium text-gray-300">
         {headline}
       </div>
       <div className="space-y-2">
@@ -83,11 +83,11 @@ export default function CheckboxList({
                 <div className="text-sm/6">
                   <label
                     htmlFor="comments"
-                    className="font-medium text-gray-900"
+                    className="font-medium text-gray-300"
                   >
                     {element.label}
                   </label>
-                  <span id="comments-description" className="text-gray-500">
+                  <span id="comments-description" className="text-gray-300">
                     <span className="sr-only">{element.label} </span>
                     {element.description}
                   </span>

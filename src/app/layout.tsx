@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SidebarLayout from "@/components/ui/SidebarLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,11 @@ export const metadata: Metadata = {
     "This is (S)itecore (E)mbedded (P)ersonalization (T)esting (A)pplication",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,8 +31,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} bg-gray-900 text-white`}
+      >
+        <SidebarLayout>{children}</SidebarLayout>
       </body>
     </html>
   );
