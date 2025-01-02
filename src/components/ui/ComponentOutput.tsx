@@ -57,8 +57,8 @@ export function ComponentOutput({
                       </dt>
 
                       <dd className="mt-1 text-sm/6 overflow-hidden text-gray-400 sm:col-span-2 sm:mt-0">
-                        {rawView ? (
-                          <RenderSitecoreField field={field} />
+                        {!rawView ? (
+                          <RenderSitecoreField field={field} fieldKey={element} />
                         ) : (
                           JSON.stringify(field.value, null, 2)
                         )}

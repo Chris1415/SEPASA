@@ -5,11 +5,14 @@ import React, { ReactElement, useState } from "react";
 
 interface RenderSitecoreFieldProps {
   field: Field;
+  fieldKey: string;
 }
 export function RenderSitecoreField({
   field,
+  fieldKey,
 }: RenderSitecoreFieldProps): ReactElement<React.FC> {
   const [showLinkToolTip, setShowLinlToolTip] = useState<boolean>(false);
+
   const imageSrc = field?.value?.["src"];
   if (imageSrc) {
     const alt = field?.value?.["alt"];
@@ -21,7 +24,7 @@ export function RenderSitecoreField({
         height={0}
         sizes="100vw"
         style={{ width: "15%", height: "auto" }}
-      ></Image>
+      />
     );
   }
 
@@ -32,7 +35,7 @@ export function RenderSitecoreField({
     const target = field?.value?.["target"];
     const text = field?.value?.["text"];
     const title = field?.value?.["title"];
-    console.log(JSON.stringify(field?.value, null, 2));
+
     return (
       <div className="relative w-full h-16">
         <button
@@ -65,6 +68,20 @@ export function RenderSitecoreField({
             __html: JSON.stringify(stringField, null, 2),
           }}
         ></div>
+      );
+    }
+
+    console.log(fieldKey + ": " + stringField);
+    if (stringField.startsWith("http") || stringField.startsWith("https")) {
+      return (
+        <Image
+          alt={"External Image"}
+          src={stringField}
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: "15%", height: "auto" }}
+        />
       );
     }
     return <div>{stringField}</div>;

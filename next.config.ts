@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
         hostname: "*.sitecorecloud.io",
         protocol: "https",
       },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
     ],
   },
 };
