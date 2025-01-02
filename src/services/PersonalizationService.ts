@@ -16,9 +16,14 @@ const transformToHiddenRenderingVariant = (
   experiences: {},
 });
 
+export interface PersonalizedComparisonElement {
+  element: ComponentRenderingWithExperiences;
+  elementKey: string | undefined;
+}
+
 export interface PersonalizationComparison {
-  original: ComponentRendering;
-  personalized: ComponentRendering;
+  original: PersonalizedComparisonElement;
+  personalized: PersonalizedComparisonElement;
 }
 
 /**
@@ -155,20 +160,41 @@ export function personalizeComponent(
     if (metadataEditing) {
       const variant = transformToHiddenRenderingVariant(component);
       personalizedComponents.push({
-        original: component,
-        personalized: variant,
+        original: {
+          element: component,
+          elementKey: undefined,
+        } as PersonalizedComparisonElement,
+        personalized: {
+          element: variant,
+          elementKey: match,
+        } as PersonalizedComparisonElement,
       });
       component = variant;
     } else {
       personalizedComponents.push({
-        original: component,
-        personalized: variant,
+        original: {
+          element: component,
+          elementKey: undefined,
+        } as PersonalizedComparisonElement,
+        personalized: {
+          element: variant,
+          elementKey: match,
+        } as PersonalizedComparisonElement,
       });
       return null;
     }
   } else if (variant) {
     component = variant;
-    personalizedComponents.push({ original: component, personalized: variant });
+    personalizedComponents.push({
+      original: {
+        element: component,
+        elementKey: undefined,
+      } as PersonalizedComparisonElement,
+      personalized: {
+        element: variant,
+        elementKey: match,
+      } as PersonalizedComparisonElement,
+    });
   }
 
   // remove unused experiences from layout data

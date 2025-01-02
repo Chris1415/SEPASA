@@ -33,6 +33,7 @@ import { deleteCookie, getCookie } from "cookies-next";
 import SelectMenu, { SelectMenuItem } from "../ui/SelectMenu";
 import CheckboxList, { CheckboxItem } from "../ui/CheckboxList";
 import { ComponentOutput } from "../ui/ComponentOutput";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 export default function PersonalizationTester() {
   const query = useSearchParams();
@@ -241,7 +242,7 @@ export default function PersonalizationTester() {
   return (
     <>
       <div>
-        <h2 className="text-1xl font-bold pt-8">Input</h2>
+        <h2 className="text-1xl font-bold pt-4">Input</h2>
         <div>
           <div className="grid grid-cols-3">
             <div className="py-2 pr-2">
@@ -365,27 +366,27 @@ export default function PersonalizationTester() {
       <div>
         <div className="grid grid-cols-6">
           <div>
-            <h2 className="text-1xl font-bold pt-8">Current Site</h2>
+            <h2 className="text-1xl font-bold pt-4">Current Site</h2>
             {siteName == null ? "No site active" : siteName}
           </div>
           <div>
-            <h2 className="text-1xl font-bold pt-8"> Current Path </h2>
+            <h2 className="text-1xl font-bold pt-4"> Current Path </h2>
             {path == null ? "No path active" : path}
           </div>
           <div>
-            <h2 className="text-1xl font-bold pt-8"> Current Language </h2>
+            <h2 className="text-1xl font-bold pt-4"> Current Language </h2>
             {language == null ? "No language active" : language}
           </div>
           <div>
-            <h2 className="text-1xl font-bold pt-8"> Current Country</h2>
+            <h2 className="text-1xl font-bold pt-4"> Current Country</h2>
             {country == null ? "No country active" : country}
           </div>
           <div>
-            <h2 className="text-1xl font-bold pt-8">CDP / P Guest ID </h2>
+            <h2 className="text-1xl font-bold pt-4">CDP / P Guest ID </h2>
             {guesId}
           </div>
           <div>
-            <h2 className="text-1xl font-bold pt-8">UTM Params</h2>
+            <h2 className="text-1xl font-bold pt-4">UTM Params</h2>
             {utmParams.join("|")}
           </div>
         </div>
@@ -394,15 +395,24 @@ export default function PersonalizationTester() {
       <hr />
 
       <div>
-        <h2 className="text-1xl font-bold pt-8">
+        <h2 className="text-1xl font-bold pt-4">
           Available Variants({allVariants?.length}){" "}
         </h2>
 
-        {allVariants == null ? "(No variants found)" : allVariants.join(" | ")}
+        {allVariants == null ? "(No variants found)" : ""}
+        <ul className="list-disc mt-2">
+          {allVariants?.map((element, key) => {
+            return (
+              <li className="ml-4" key={key}>
+                {element}
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
       <div>
-        <h2 className="text-1xl font-bold pt-8"> Active Variant is: </h2>
+        <h2 className="text-1xl font-bold pt-4"> Active Variant is: </h2>
 
         {chosenVariant == null ? "(No active variant found)" : chosenVariant}
       </div>
@@ -410,7 +420,7 @@ export default function PersonalizationTester() {
       <hr />
 
       <div>
-        <h2 className="text-1xl font-bold pt-8">
+        <h2 className="text-1xl font-bold pt-4">
           Standard Layout Response is:
         </h2>
         <div className={readMore ? "" : "line-clamp-3"}>
@@ -425,12 +435,12 @@ export default function PersonalizationTester() {
         >
           {readMore ? "Read less" : "Read more"}
         </button>
-        <div>
+        <div className="mt-8">
           {componentsWithExperiences?.map((element, key) => {
             return (
               <div
                 key={key}
-                className="border-solid border-gray-300 border-2 m-2 p-2"
+                className="border-solid border-gray-300 border-2 my-2 p-2"
               >
                 <h2 className="text-2xl italic font-bold text-white pt-2">
                   Rendering: {element.uid}
@@ -451,36 +461,42 @@ export default function PersonalizationTester() {
         </div>
       </div>
       <div className="mb-4">
-        <h2 className="text-1xl font-bold pt-8">
+        <h2 className="text-1xl font-bold pt-4">
           Personalized Components comparison
         </h2>
         <div>
           {personalizedComponents == null ? (
             <>... no data for {path}</>
           ) : (
-            <div className="grid grid-cols-2">
-              <div>
-                <div>
-                  <h3 className="text-1xl font-bold pt-8 text-center">
-                    Original Content
-                  </h3>
-                </div>
+            <div className="grid grid-cols-7 mb-4">
+              <div className="col-span-3">
+                <h3 className="text-1xl font-bold pt-4 text-center">
+                  Original Content
+                </h3>
               </div>
-              <div>
-                <div>
-                  <h3 className="text-1xl font-bold pt-8 text-center">
-                    Personalized Content{" "}
-                  </h3>
-                </div>
+              <div></div>
+              <div className="col-span-3">
+                <h3 className="text-1xl font-bold pt-4 text-center">
+                  Personalized Content{" "}
+                </h3>
               </div>
+
               {personalizedComponents.map((element) => {
                 return (
                   <>
-                    <div className="border border-black p-4 m-2">
-                      {JSON.stringify(element.original, null, 2)}
+                    <div className="m-2 col-span-3 h-full">
+                      {/* {JSON.stringify(element.original, null, 2)} */}
+                      <ComponentOutput component={element.original.element} />
                     </div>
-                    <div className="border border-black p-4 m-2">
-                      {JSON.stringify(element.personalized, null, 2)}
+                    <div className="h-full mt-[60%]">
+                      <ChevronDoubleRightIcon className="text-gray-400" />
+                    </div>
+                    <div className="m-2 col-span-3 h-full">
+                      <ComponentOutput
+                        component={element.personalized.element}
+                        variantId={element.personalized.elementKey}
+                      />
+                      {/* {JSON.stringify(element.personalized, null, 2)} */}
                     </div>
                   </>
                 );

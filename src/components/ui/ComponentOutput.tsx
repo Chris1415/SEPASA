@@ -15,7 +15,7 @@ export function ComponentOutput({
   const [rawView, setRawView] = useState<boolean>(true);
   return (
     <>
-      <div className="border-gray-400 border-2 border-dotted my-4 p-4 bg-gray-950 inline-block w-full">
+      <div className="h-full border-gray-400 border-2 border-dotted my-2 p-4 bg-gray-950 inline-block w-full shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm">
         <h3 className="text-lg font-semibold text-white inline-block">
           {component?.componentName ?? "No component"}
         </h3>
@@ -58,7 +58,10 @@ export function ComponentOutput({
 
                       <dd className="mt-1 text-sm/6 overflow-hidden text-gray-400 sm:col-span-2 sm:mt-0">
                         {!rawView ? (
-                          <RenderSitecoreField field={field} fieldKey={element} />
+                          <RenderSitecoreField
+                            field={field}
+                            fieldKey={element}
+                          />
                         ) : (
                           JSON.stringify(field.value, null, 2)
                         )}
