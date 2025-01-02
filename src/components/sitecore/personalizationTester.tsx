@@ -461,8 +461,8 @@ export default function PersonalizationTester() {
         </div>
       </div>
       <div className="mb-4">
-        <h2 className="text-1xl font-bold pt-4">
-          Personalized Components comparison
+        <h2 className="text-1xl font-bold pt-4 mb-4">
+          Personalized Components comparison:
         </h2>
         <div>
           {personalizedComponents == null ? (
@@ -484,14 +484,14 @@ export default function PersonalizationTester() {
               {personalizedComponents.map((element) => {
                 return (
                   <>
-                    <div className="m-2 col-span-3 h-full">
+                    <div className="mx-2 py-4 col-span-3 h-full">
                       {/* {JSON.stringify(element.original, null, 2)} */}
                       <ComponentOutput component={element.original.element} />
                     </div>
-                    <div className="h-full mt-[60%]">
-                      <ChevronDoubleRightIcon className="text-gray-400" />
+                    <div className="mx-2 py-4 h-full pt-[90%]">
+                      <ChevronDoubleRightIcon className="text-gray-400 hover:text-purple-900" />
                     </div>
-                    <div className="m-2 col-span-3 h-full">
+                    <div className=" mx-2 py-4 col-span-3 h-full">
                       <ComponentOutput
                         component={element.personalized.element}
                         variantId={element.personalized.elementKey}

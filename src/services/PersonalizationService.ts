@@ -169,7 +169,7 @@ export function personalizeComponent(
           elementKey: match,
         } as PersonalizedComparisonElement,
       });
-      component = variant;
+      // component = variant;
     } else {
       personalizedComponents.push({
         original: {
@@ -184,7 +184,7 @@ export function personalizeComponent(
       return null;
     }
   } else if (variant) {
-    component = variant;
+    // component = variant;
     personalizedComponents.push({
       original: {
         element: component,

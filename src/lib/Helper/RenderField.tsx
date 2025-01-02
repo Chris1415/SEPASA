@@ -5,11 +5,9 @@ import React, { ReactElement, useState } from "react";
 
 interface RenderSitecoreFieldProps {
   field: Field;
-  fieldKey: string;
 }
 export function RenderSitecoreField({
   field,
-  fieldKey,
 }: RenderSitecoreFieldProps): ReactElement<React.FC> {
   const [showLinkToolTip, setShowLinlToolTip] = useState<boolean>(false);
 
@@ -23,7 +21,7 @@ export function RenderSitecoreField({
         width={0}
         height={0}
         sizes="100vw"
-        style={{ width: "15%", height: "auto" }}
+        style={{ width: "20%", height: "auto" }}
       />
     );
   }
@@ -63,15 +61,16 @@ export function RenderSitecoreField({
     }
     if (stringField.includes("div")) {
       return (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(stringField, null, 2),
-          }}
-        ></div>
+        <>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(stringField, null, 2),
+            }}
+          ></div>
+        </>
       );
     }
 
-    console.log(fieldKey + ": " + stringField);
     if (stringField.startsWith("http") || stringField.startsWith("https")) {
       return (
         <Image
@@ -80,7 +79,7 @@ export function RenderSitecoreField({
           width={0}
           height={0}
           sizes="100vw"
-          style={{ width: "15%", height: "auto" }}
+          style={{ width: "20%", height: "auto" }}
         />
       );
     }

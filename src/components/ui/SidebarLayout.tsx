@@ -217,18 +217,6 @@ export default function SidebarLayout({ children }) {
                     ))}
                   </ul>
                 </li>
-                <li className="mt-auto">
-                  <a
-                    href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white"
-                  >
-                    <Cog6ToothIcon
-                      aria-hidden="true"
-                      className="size-6 shrink-0"
-                    />
-                    Settings
-                  </a>
-                </li>
               </ul>
             </nav>
           </div>
