@@ -4,8 +4,11 @@ import { LayoutServiceData, Route, SiteInfo } from "@/types/sitecore";
 import { DocumentNode, gql } from "@apollo/client";
 
 export async function fetchSiteRoutes(siteName: string): Promise<Route[]> {
-  const query = gql
-  `query {
+  if (!siteName) {
+    return [];
+  }
+
+  const query = gql`query {
       site {
          siteInfo(site:"${siteName}") { 
           name

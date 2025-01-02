@@ -32,7 +32,7 @@ import { getGuestId } from "@sitecore-cloudsdk/core/browser";
 import { deleteCookie, getCookie } from "cookies-next";
 import SelectMenu, { SelectMenuItem } from "../ui/SelectMenu";
 import CheckboxList, { CheckboxItem } from "../ui/CheckboxList";
-import DescriptionList from "../ui/DescriptionList";
+import { ComponentOutput } from "../ui/ComponentOutput";
 
 export default function PersonalizationTester() {
   const query = useSearchParams();
@@ -211,7 +211,8 @@ export default function PersonalizationTester() {
 
         // if (identifiedVariantIds.length > 0) {
         const personalizedComponents: PersonalizationComparison[] = [];
-        const componentsWithExperiences: ComponentRenderingWithExperiences[] = [];
+        const componentsWithExperiences: ComponentRenderingWithExperiences[] =
+          [];
         personalizeLayout(
           layoutData,
           identifiedVariantIds?.at(0) ?? "",
@@ -425,19 +426,28 @@ export default function PersonalizationTester() {
           {readMore ? "Read less" : "Read more"}
         </button>
         <div>
-          <div className="overflow-hidden rounded-md shadow">
-            <ul role="list" className="divide-y divide-gray-200">
-              {componentsWithExperiences?.map((element) => {
-                return (
-                  <>
-                    <li key={element?.uid} className="py-4">
-                      <DescriptionList component={element} />
-                    </li>
-                  </>
-                );
-              })}
-            </ul>
-          </div>
+          {componentsWithExperiences?.map((element, key) => {
+            return (
+              <div
+                key={key}
+                className="border-solid border-gray-300 border-2 m-2 p-2"
+              >
+                <h2 className="text-2xl italic font-bold text-white pt-2">
+                  Rendering: {element.uid}
+                </h2>
+                <ComponentOutput component={element} />
+                {Object.keys(element.experiences).map((experienceKey, key) => {
+                  return (
+                    <ComponentOutput
+                      key={key}
+                      component={element.experiences[experienceKey]}
+                      variantId={experienceKey}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="mb-4">
