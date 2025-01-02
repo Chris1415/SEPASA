@@ -44,7 +44,7 @@ export default function CheckboxList({
         {headline}
       </div>
       <div className="space-y-2">
-        <div className="grid grid-cols-4">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-4">
           {items?.map((element: CheckboxItem) => {
             return (
               <div key={element.key} className="flex gap-3 pt-2">

@@ -277,7 +277,7 @@ export default function PersonalizationTester() {
                 items={allRoutes?.map((element) => {
                   return {
                     key: element.routePath,
-                    label: element.routePath + " (" + element.route.name + ")",
+                    label: element.routePath,
                   } as SelectMenuItem;
                 })}
                 chosenValue={path}
@@ -364,7 +364,7 @@ export default function PersonalizationTester() {
       <hr />
 
       <div>
-        <div className="grid grid-cols-6">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           <div>
             <h2 className="text-1xl font-bold pt-4">Current Site</h2>
             {siteName == null ? "No site active" : siteName}
@@ -387,7 +387,7 @@ export default function PersonalizationTester() {
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4">UTM Params</h2>
-            {utmParams.join("|")}
+            {utmParams.join(" | ")}
           </div>
         </div>
       </div>
@@ -440,7 +440,7 @@ export default function PersonalizationTester() {
             return (
               <div
                 key={key}
-                className="border-solid border-gray-300 border-2 my-2 p-2"
+                className="border-solid border-gray-300 border-2 my-12 p-2"
               >
                 <h2 className="text-2xl italic font-bold text-white pt-2">
                   Rendering: {element.uid}
