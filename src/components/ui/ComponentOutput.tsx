@@ -60,7 +60,7 @@ export function ComponentOutput({
                         {!rawView ? (
                           <RenderSitecoreField field={field} />
                         ) : (
-                          JSON.stringify(field.value, null, 2)
+                          <pre>{JSON.stringify(field.value, null, 2)}</pre>
                         )}
                       </dd>
                     </div>

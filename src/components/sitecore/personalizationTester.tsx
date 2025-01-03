@@ -51,7 +51,7 @@ export default function PersonalizationTester() {
   const [pathForEvent, setPathForEvent] = useState<string>("");
   const [guesId, setGuesId] = useState<string>();
   const [utmParams, setUtmParams] = useState<string[]>([]);
-  const [readMore, setReadMore] = useState<boolean>();
+  const [readMore, setReadMore] = useState<boolean>(false);
   const [componentsWithExperiences, setComponentsWithExperiences] =
     useState<ComponentRenderingWithExperiences[]>();
 
@@ -423,18 +423,37 @@ export default function PersonalizationTester() {
         <h2 className="text-1xl font-bold pt-4">
           Standard Layout Response is:
         </h2>
+        {layoutData != null ? (
+          <button
+            onClick={() => setReadMore(!readMore)}
+            type="button"
+            className="rounded m-2 mx-auto w-auto bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            {readMore ? "Read less" : "Read more"}
+          </button>
+        ) : (
+          <></>
+        )}
+
         <div className={readMore ? "" : "line-clamp-3"}>
-          {layoutData == null
-            ? "... no data for " + path
-            : JSON.stringify(layoutData, null, 2)}
+          <pre className={readMore ? "overflow-auto" : "line-clamp-6"}>
+            {layoutData == null
+              ? "... no data for " + path
+              : JSON.stringify(layoutData, null, 2)}
+          </pre>
         </div>
-        <button
-          onClick={() => setReadMore(!readMore)}
-          type="button"
-          className="rounded m-2 mx-auto w-auto bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          {readMore ? "Read less" : "Read more"}
-        </button>
+        {readMore && layoutData != null ? (
+          <button
+            onClick={() => setReadMore(!readMore)}
+            type="button"
+            className="rounded m-2 mx-auto w-auto bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            {readMore ? "Read less" : "Read more"}
+          </button>
+        ) : (
+          <></>
+        )}
+
         <div className="mt-8">
           {componentsWithExperiences?.map((element, key) => {
             return (
