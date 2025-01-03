@@ -14,9 +14,9 @@ export default async function Home() {
           sizes="100vw"
           style={{ width: "100%", height: "100%" }}
         />
-        <div className="absolute top-12 left-7 bg-gray-700/80 rounded-3xl w-1/4 p-6">
+        <div className="absolute top-12 left-7 bg-gray-700/80 rounded-3xl w-1/3 p-6">
           <h2 className="font-bold text-5xl italic"> Welcome SEPTA </h2>
-          <p className="pt-6 text-lg font-bold text-justify">
+          <p className="pt-6 text-2xl font-bold text-justify">
             This is a personal project to test embedded personalization for
             Sitecore XM Cloud. The main goals of this projects are to get a
             better understanding how exactly personalization works and of course

@@ -483,58 +483,56 @@ export default function PersonalizationTester() {
           <></>
         )}
 
-        <div>
-          {personalizedComponents == null ? (
-            <>... no data for {path}</>
-          ) : cardBasedPersonalizedOutput ? (
-            <div className="grid grid-cols-7 mb-4">
-              <div className="col-span-3">
-                <h3 className="text-1xl font-bold pt-4 text-center">
-                  Original Content
-                </h3>
-              </div>
-              <div></div>
-              <div className="col-span-3">
-                <h3 className="text-1xl font-bold pt-4 text-center">
-                  Personalized Content{" "}
-                </h3>
-              </div>
-
-              {personalizedComponents.map((element) => {
-                return (
-                  <>
-                    <div className="mx-2 py-4 col-span-3 h-full">
-                      {/* {JSON.stringify(element.original, null, 2)} */}
-                      <ComponentOutput component={element.original.element} />
-                    </div>
-                    <div className="mx-2 py-4 h-full pt-[70%]">
-                      <ChevronDoubleRightIcon className="text-gray-400 hover:text-purple-900" />
-                    </div>
-                    <div className=" mx-2 py-4 col-span-3 h-full">
-                      <ComponentOutput
-                        component={element.personalized.element}
-                        variantId={element.personalized.elementKey}
-                      />
-                      {/* {JSON.stringify(element.personalized, null, 2)} */}
-                    </div>
-                  </>
-                );
-              })}
+        {personalizedComponents == null ? (
+          <>... no data for {path}</>
+        ) : cardBasedPersonalizedOutput ? (
+          <div className="grid grid-cols-7 mb-4 w-full">
+            <div className="col-span-3">
+              <h3 className="text-1xl font-bold pt-4 text-center">
+                Original Content
+              </h3>
             </div>
-          ) : (
-            <>
-              {personalizedComponents.map((element) => {
-                return (
-                  <>
-                    <div className="col-span-7 p-4 m-2 bg-gray-950 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm">
-                      <PersonalizationComparisonExplainer element={element} />
-                    </div>
-                  </>
-                );
-              })}
-            </>
-          )}
-        </div>
+            <div></div>
+            <div className="col-span-3">
+              <h3 className="text-1xl font-bold pt-4 text-center">
+                Personalized Content{" "}
+              </h3>
+            </div>
+
+            {personalizedComponents.map((element) => {
+              return (
+                <>
+                  <div className="mx-2 py-4 col-span-3 h-full">
+                    {/* {JSON.stringify(element.original, null, 2)} */}
+                    <ComponentOutput component={element.original.element} />
+                  </div>
+                  <div className="mx-2 py-4 h-full pt-[70%]">
+                    <ChevronDoubleRightIcon className="text-gray-400 hover:text-purple-900" />
+                  </div>
+                  <div className=" mx-2 py-4 col-span-3 h-full">
+                    <ComponentOutput
+                      component={element.personalized.element}
+                      variantId={element.personalized.elementKey}
+                    />
+                    {/* {JSON.stringify(element.personalized, null, 2)} */}
+                  </div>
+                </>
+              );
+            })}
+          </div>
+        ) : (
+          <>
+            {personalizedComponents.map((element) => {
+              return (
+                <>
+                  <div className="col-span-7 p-4 m-2 bg-gray-950 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm">
+                    <PersonalizationComparisonExplainer element={element} />
+                  </div>
+                </>
+              );
+            })}
+          </>
+        )}
       </div>
     </>
   );
