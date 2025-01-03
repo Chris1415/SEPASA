@@ -200,8 +200,15 @@ export function PersonalizationComparisonExplainer({
 
   return (
     <>
-      <div></div>
-      <ul className="list-disc pl-2">
+      <div className="mb-4">
+        <h3 className="text-3xl font-bold inline-block">
+          {originalElement.componentName}
+        </h3>
+        <p className="float-end inline-block text-sm text-gray-300 bg-indigo-700 rounded-md p-1">
+          <b>UID</b> {element.original.element.uid}
+        </p>
+      </div>
+      <ul className="list-disc pl-2 text-sm">
         {PersonalizationTypeExplanation(personalizationType)}
         {RenderingExchangeExplainer(
           originalElement,

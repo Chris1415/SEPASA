@@ -55,6 +55,8 @@ export default function PersonalizationTester() {
   const [readMore, setReadMore] = useState<boolean>(false);
   const [componentsWithExperiences, setComponentsWithExperiences] =
     useState<ComponentRenderingWithExperiences[]>();
+  const [cardBasedPersonalizedOutput, setCardBasedPersonalizedOutput] =
+    useState<boolean>(false);
 
   function AddPathToViewEvents() {
     pageView({
@@ -439,18 +441,6 @@ export default function PersonalizationTester() {
               : JSON.stringify(layoutData, null, 2)}
           </pre>
         </div>
-        {readMore && layoutData != null ? (
-          <button
-            onClick={() => setReadMore(!readMore)}
-            type="button"
-            className="rounded m-2 mx-auto w-auto bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            {readMore ? "Read less" : "Read more"}
-          </button>
-        ) : (
-          <></>
-        )}
-
         <div className="mt-8">
           {componentsWithExperiences?.map((element, key) => {
             return (
@@ -477,13 +467,26 @@ export default function PersonalizationTester() {
         </div>
       </div>
       <div className="mb-4">
-        <h2 className="text-1xl font-bold pt-4 mb-4">
+        <h2 className="text-1xl font-bold mb-4 inline-block">
           Personalized Components comparison:
         </h2>
+        {personalizedComponents != null ? (
+          <button
+            className="float-end inline-block mb-4 bg-indigo-600 py-1 px-2 rounded-lg "
+            onClick={() =>
+              setCardBasedPersonalizedOutput(!cardBasedPersonalizedOutput)
+            }
+          >
+            {cardBasedPersonalizedOutput ? "To Textual" : "To Card based"}
+          </button>
+        ) : (
+          <></>
+        )}
+
         <div>
           {personalizedComponents == null ? (
             <>... no data for {path}</>
-          ) : (
+          ) : cardBasedPersonalizedOutput ? (
             <div className="grid grid-cols-7 mb-4">
               <div className="col-span-3">
                 <h3 className="text-1xl font-bold pt-4 text-center">
@@ -514,13 +517,22 @@ export default function PersonalizationTester() {
                       />
                       {/* {JSON.stringify(element.personalized, null, 2)} */}
                     </div>
-                    <div className="col-span-7 p-4 m-2 border-2 border-dotted border-green-800">
-                      <PersonalizationComparisonExplainer element={element}/>
-                    </div>
                   </>
                 );
               })}
             </div>
+          ) : (
+            <>
+              {personalizedComponents.map((element) => {
+                return (
+                  <>
+                    <div className="col-span-7 p-4 m-2 bg-gray-950 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm">
+                      <PersonalizationComparisonExplainer element={element} />
+                    </div>
+                  </>
+                );
+              })}
+            </>
           )}
         </div>
       </div>
