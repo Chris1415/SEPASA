@@ -34,6 +34,7 @@ import SelectMenu, { SelectMenuItem } from "../ui/SelectMenu";
 import CheckboxList, { CheckboxItem } from "../ui/CheckboxList";
 import { ComponentOutput } from "../ui/ComponentOutput";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { PersonalizationComparisonExplainer } from "@/lib/Helper/PersonalizationComparisonExplainer";
 
 export default function PersonalizationTester() {
   const query = useSearchParams();
@@ -423,19 +424,15 @@ export default function PersonalizationTester() {
         <h2 className="text-1xl font-bold pt-4">
           Standard Layout Response is:
         </h2>
-        {layoutData != null ? (
-          <button
-            onClick={() => setReadMore(!readMore)}
-            type="button"
-            className="rounded m-2 mx-auto w-auto bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            {readMore ? "Read less" : "Read more"}
-          </button>
-        ) : (
-          <></>
-        )}
+        <p className="text-gray-500 text-sm pb-2">Click to see full response</p>
 
-        <div className={readMore ? "" : "line-clamp-3"}>
+        <div
+          onClick={() => setReadMore(!readMore)}
+          className={
+            (readMore ? "" : "line-clamp-3") +
+            " cursor-pointer bg-gray-950 p-3 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm"
+          }
+        >
           <pre className={readMore ? "overflow-auto" : "line-clamp-6"}>
             {layoutData == null
               ? "... no data for " + path
@@ -507,7 +504,7 @@ export default function PersonalizationTester() {
                       {/* {JSON.stringify(element.original, null, 2)} */}
                       <ComponentOutput component={element.original.element} />
                     </div>
-                    <div className="mx-2 py-4 h-full pt-[90%]">
+                    <div className="mx-2 py-4 h-full pt-[70%]">
                       <ChevronDoubleRightIcon className="text-gray-400 hover:text-purple-900" />
                     </div>
                     <div className=" mx-2 py-4 col-span-3 h-full">
@@ -516,6 +513,9 @@ export default function PersonalizationTester() {
                         variantId={element.personalized.elementKey}
                       />
                       {/* {JSON.stringify(element.personalized, null, 2)} */}
+                    </div>
+                    <div className="col-span-7 p-4 m-2 border-2 border-dotted border-green-800">
+                      <PersonalizationComparisonExplainer element={element}/>
                     </div>
                   </>
                 );
