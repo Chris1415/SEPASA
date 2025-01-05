@@ -29,7 +29,7 @@ import {
 } from "@/services/PersonalizationService";
 import { pageView } from "@sitecore-cloudsdk/events/browser";
 import { getGuestId } from "@sitecore-cloudsdk/core/browser";
-import { deleteCookie, getCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import SelectMenu, { SelectMenuItem } from "../ui/SelectMenu";
 import CheckboxList, { CheckboxItem } from "../ui/CheckboxList";
 import { ComponentOutput } from "../ui/ComponentOutput";
@@ -50,7 +50,7 @@ export default function PersonalizationSimulator() {
   const [language, setLanguage] = useState<string>("en");
   const [country, setCountry] = useState<string>("");
   const [pathForEvent, setPathForEvent] = useState<string>("");
-  const [guesId, setGuesId] = useState<string>();
+  const [guestId, setGuesId] = useState<string>();
   const [utmParams, setUtmParams] = useState<string[]>([]);
   const [readMore, setReadMore] = useState<boolean>(false);
   const [componentsWithExperiences, setComponentsWithExperiences] =
@@ -58,22 +58,36 @@ export default function PersonalizationSimulator() {
   const [cardBasedPersonalizedOutput, setCardBasedPersonalizedOutput] =
     useState<boolean>(false);
   const [referrer, setReferrer] = useState<string>();
+  const [chosenReferrer, setChosenReferrer] = useState<string>();
   const [showAllExperiences, setShowAllExperiences] = useState<boolean>(false);
+  const [journeyPathes, setJourneyPathes] = useState<string[]>([]);
 
-  function AddPathToViewEvents() {
+  async function AddPathToViewEvents() {
     pageView({
       channel: "WEB",
       currency: "USD",
       page: pathForEvent,
       language,
       includeUTMParameters: true,
+      referrer: chosenReferrer,
+      //requested_at is missing for Date and Datetime ???
     });
+
+    const currentPathes = journeyPathes;
+    currentPathes.push(pathForEvent);
+    setJourneyPathes([...currentPathes]);
+
+    if (guestId) {
+      setCookie(guestId + "_journey", currentPathes.join("|"));
+    }
   }
 
   async function ResetGuestId() {
     const cookieName = "sc_5Q0eCEiytH8KmmQtcmiRUG";
     deleteCookie(cookieName + "_personalize");
     deleteCookie(cookieName);
+    setJourneyPathes([]);
+    setCookie(guestId + "_journey", []);
 
     CloudSDK({
       sitecoreEdgeContextId: process.env.NEXT_PUBLIC_CONTEXTID ?? "",
@@ -114,6 +128,17 @@ export default function PersonalizationSimulator() {
   }, [siteName]);
 
   useEffect(() => {
+    async function SetJourneysFromCookies() {
+      const existingJourneySession = await getCookie(guestId + "_journey");
+      if (existingJourneySession) {
+        setJourneyPathes(existingJourneySession?.split("|"));
+      }
+    }
+
+    SetJourneysFromCookies();
+  }, [guestId]);
+
+  useEffect(() => {
     const utm = {
       campaign: utmParams.includes("utm_campaign") || undefined,
       content: utmParams.includes("utm_content") || undefined,
@@ -137,7 +162,8 @@ export default function PersonalizationSimulator() {
       // *****
 
       async function SetGuesId() {
-        setGuesId(await getGuestId());
+        const guestId = await getGuestId();
+        setGuesId(guestId);
       }
 
       SetGuesId();
@@ -180,7 +206,10 @@ export default function PersonalizationSimulator() {
         await Promise.all(
           personalizationExecutions.map((execution) =>
             executePersonalize({
-              params: { utm: utm, referrer: referrer } as ExperienceParams,
+              params: {
+                utm: utm,
+                referrer: chosenReferrer,
+              } as ExperienceParams,
               friendlyId: execution.friendlyId,
               variantIds: execution.variantIds,
               language,
@@ -242,7 +271,16 @@ export default function PersonalizationSimulator() {
 
       Personalize();
     }
-  }, [language, path, query, siteName, country, utmParams, referrer]);
+  }, [
+    language,
+    path,
+    query,
+    siteName,
+    country,
+    utmParams,
+    chosenReferrer,
+    journeyPathes,
+  ]);
 
   return (
     <>
@@ -290,7 +328,7 @@ export default function PersonalizationSimulator() {
               />
             </div>
           </div>
-          <hr className="mt-4"/>
+          <hr className="mt-4" />
           <h2 className="text-2xl italic font-bold pt-4">Simulation Input</h2>
           <div className="grid grid-cols-2">
             <div className="py-2 pr-2">
@@ -380,6 +418,12 @@ export default function PersonalizationSimulator() {
                   className="block w-full rounded-md bg-gray-900 px-3 py-1 text-base text-gray-300 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
               </div>
+              <button
+                className="rounded bg-indigo-600 px-4 mr-2 mt-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={() => setChosenReferrer(referrer)}
+              >
+                Set
+              </button>
             </div>
           </div>
         </div>
@@ -387,42 +431,69 @@ export default function PersonalizationSimulator() {
 
       <hr />
 
-      <div>
+      <div className="w-full">
         <h2 className="text-2xl italic font-bold pb-2"> Parameter Overview</h2>
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3  ">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
           <div>
             <h2 className="text-xl italic font-bold pt-4">Current Site</h2>
-            <div className="text-gray-400">
+            <div className="text-gray-400 bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1">
               {siteName == null ? "No site active" : siteName}
             </div>
           </div>
           <div>
             <h2 className="text-1xl italic font-bold pt-4"> Current Path </h2>
-            <div className="text-gray-400">
+
+            <div className="text-gray-400 bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1">
               {path == null ? "No path active" : path}
             </div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4"> Current Language </h2>
-            <div className="text-gray-400">
+
+            <div className="text-gray-400 bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1">
               {language == null ? "No language active" : language}
             </div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4"> Current Country</h2>
-            <div className="text-gray-400">
-              {language == null ? "No language active" : language}
+
+            <div className="text-gray-400 bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1">
+              {language == null ? "No language active" : country}
             </div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4">CDP / P Guest ID </h2>
-            <div className="text-gray-400">{guesId}</div>
+
+            <div className="text-gray-400 bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1">
+              {guestId}
+            </div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4">UTM Params</h2>
+
+            {utmParams &&
+              utmParams.map((element, key) => {
+                return (
+                  <div
+                    key={key}
+                    className="text-gray-400 bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1"
+                  >
+                    {element}
+                  </div>
+                );
+              })}
+          </div>
+          <div>
+            <h2 className="text-1xl font-bold pt-4">Referrer </h2>
+            <div className="text-gray-400 bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1">
+              {chosenReferrer}
+            </div>
+          </div>
+          <div>
+            <h2 className="text-1xl font-bold pt-4">Journey Pathes</h2>
             <div className="text-gray-400">
-              {utmParams &&
-                utmParams.map((element, key) => {
+              {journeyPathes &&
+                journeyPathes.map((element, key) => {
                   return (
                     <div
                       className="bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1"
@@ -439,7 +510,7 @@ export default function PersonalizationSimulator() {
 
       <hr />
 
-      <div>
+      <div className="w-full">
         <h2 className="text-2xl italic font-bold pb-2">
           Available Variants ({allVariants?.length ?? 0})
         </h2>
@@ -456,7 +527,7 @@ export default function PersonalizationSimulator() {
             <div
               key={key}
               className={
-                " bg-indigo-800 rounded-md inline-block py-1 px-2 mr-2"
+                " bg-indigo-800 rounded-md inline-block py-1 px-2 mr-2 mt-1"
               }
             >
               {element}
@@ -465,7 +536,7 @@ export default function PersonalizationSimulator() {
         })}
       </div>
 
-      <div>
+      <div className="w-full">
         <h2 className="text-2xl italic font-bold pb-2">Active Variant is:</h2>
         <div
           className={

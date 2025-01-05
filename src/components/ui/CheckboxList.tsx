@@ -36,7 +36,7 @@ export default function CheckboxList({
       currentCheckedValues.push(val);
     }
     console.log(currentCheckedValues);
-    setChosenValues(currentCheckedValues);
+    setChosenValues([...currentCheckedValues]);
   }
   return (
     <fieldset>
