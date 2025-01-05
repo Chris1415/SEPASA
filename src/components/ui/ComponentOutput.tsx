@@ -32,8 +32,8 @@ export function ComponentOutput({
         )}
         <span
           className={`inline-block float-end rounded-md ${
-            !variantId ? "bg-green-300" : "bg-red-300"
-          } px-1.5 py-0.5 text-sm font-medium text-gray-700`}
+            !variantId ? "bg-green-800" : "bg-indigo-800"
+          } px-1.5 py-0.5 text-sm font-medium text-gray-200`}
         >
           {variantId ? variantId : "Original"}
         </span>

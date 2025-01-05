@@ -36,7 +36,7 @@ import { ComponentOutput } from "../ui/ComponentOutput";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { PersonalizationComparisonExplainer } from "@/lib/Helper/PersonalizationComparisonExplainer";
 
-export default function PersonalizationTester() {
+export default function PersonalizationSimulator() {
   const query = useSearchParams();
   const [allVariants, setAllVariants] = useState<string[] | null>();
   const [chosenVariant, setChosenVariant] = useState<string[] | null>();
@@ -57,6 +57,8 @@ export default function PersonalizationTester() {
     useState<ComponentRenderingWithExperiences[]>();
   const [cardBasedPersonalizedOutput, setCardBasedPersonalizedOutput] =
     useState<boolean>(false);
+  const [referrer, setReferrer] = useState<string>();
+  const [showAllExperiences, setShowAllExperiences] = useState<boolean>(false);
 
   function AddPathToViewEvents() {
     pageView({
@@ -178,7 +180,7 @@ export default function PersonalizationTester() {
         await Promise.all(
           personalizationExecutions.map((execution) =>
             executePersonalize({
-              params: { utm: utm, referrer: "" } as ExperienceParams,
+              params: { utm: utm, referrer: referrer } as ExperienceParams,
               friendlyId: execution.friendlyId,
               variantIds: execution.variantIds,
               language,
@@ -240,12 +242,12 @@ export default function PersonalizationTester() {
 
       Personalize();
     }
-  }, [language, path, query, siteName, country, utmParams]);
+  }, [language, path, query, siteName, country, utmParams, referrer]);
 
   return (
     <>
       <div>
-        <h2 className="text-1xl font-bold pt-4">Input</h2>
+        <h2 className="text-2xl italic font-bold pt-4">Routing Input</h2>
         <div>
           <div className="grid grid-cols-3">
             <div className="py-2 pr-2">
@@ -288,8 +290,9 @@ export default function PersonalizationTester() {
               />
             </div>
           </div>
-          <hr />
-          <div className="grid grid-cols-3">
+          <hr className="mt-4"/>
+          <h2 className="text-2xl italic font-bold pt-4">Simulation Input</h2>
+          <div className="grid grid-cols-2">
             <div className="py-2 pr-2">
               <SelectMenu
                 headline="Select Country"
@@ -318,7 +321,7 @@ export default function PersonalizationTester() {
               <button
                 onClick={() => AddPathToViewEvents()}
                 type="button"
-                className="rounded bg-indigo-600 px-4 mx-2 mt-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="rounded bg-indigo-600 px-4 mr-2 mt-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Add
               </button>
@@ -359,38 +362,77 @@ export default function PersonalizationTester() {
                 setChosenValues={setUtmParams}
               />
             </div>
+            <div className="pt-3">
+              <label
+                htmlFor="referrer"
+                className="block text-sm/6 font-medium text-gray-300"
+              >
+                Referrer
+              </label>
+              <div className="mt-1">
+                <input
+                  id="referrer"
+                  name="referrer"
+                  type="text"
+                  value={referrer}
+                  onChange={(e) => setReferrer(e.target.value)}
+                  placeholder="Please add an absoulte URL as referrer"
+                  className="block w-full rounded-md bg-gray-900 px-3 py-1 text-base text-gray-300 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                />
+              </div>
+            </div>
           </div>
         </div>
-        <div></div>
       </div>
 
       <hr />
 
       <div>
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        <h2 className="text-2xl italic font-bold pb-2"> Parameter Overview</h2>
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3  ">
           <div>
-            <h2 className="text-1xl font-bold pt-4">Current Site</h2>
-            {siteName == null ? "No site active" : siteName}
+            <h2 className="text-xl italic font-bold pt-4">Current Site</h2>
+            <div className="text-gray-400">
+              {siteName == null ? "No site active" : siteName}
+            </div>
           </div>
           <div>
-            <h2 className="text-1xl font-bold pt-4"> Current Path </h2>
-            {path == null ? "No path active" : path}
+            <h2 className="text-1xl italic font-bold pt-4"> Current Path </h2>
+            <div className="text-gray-400">
+              {path == null ? "No path active" : path}
+            </div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4"> Current Language </h2>
-            {language == null ? "No language active" : language}
+            <div className="text-gray-400">
+              {language == null ? "No language active" : language}
+            </div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4"> Current Country</h2>
-            {country == null ? "No country active" : country}
+            <div className="text-gray-400">
+              {language == null ? "No language active" : language}
+            </div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4">CDP / P Guest ID </h2>
-            {guesId}
+            <div className="text-gray-400">{guesId}</div>
           </div>
           <div>
             <h2 className="text-1xl font-bold pt-4">UTM Params</h2>
-            {utmParams.join(" | ")}
+            <div className="text-gray-400">
+              {utmParams &&
+                utmParams.map((element, key) => {
+                  return (
+                    <div
+                      className="bg-indigo-800 inline-block px-1.5 text-sm py-1 mt-1 rounded-md mr-1"
+                      key={key}
+                    >
+                      {element}
+                    </div>
+                  );
+                })}
+            </div>
           </div>
         </div>
       </div>
@@ -398,32 +440,51 @@ export default function PersonalizationTester() {
       <hr />
 
       <div>
-        <h2 className="text-1xl font-bold pt-4">
-          Available Variants({allVariants?.length}){" "}
+        <h2 className="text-2xl italic font-bold pb-2">
+          Available Variants ({allVariants?.length ?? 0})
         </h2>
+        {allVariants == null ? (
+          <div className={"bg-red-800 rounded-md inline-block py-1 px-2 mr-2"}>
+            No available Variants found
+          </div>
+        ) : (
+          <></>
+        )}
 
-        {allVariants == null ? "(No variants found)" : ""}
-        <ul className="list-disc mt-2">
-          {allVariants?.map((element, key) => {
-            return (
-              <li className="ml-4" key={key}>
-                {element}
-              </li>
-            );
-          })}
-        </ul>
+        {allVariants?.map((element, key) => {
+          return (
+            <div
+              key={key}
+              className={
+                " bg-indigo-800 rounded-md inline-block py-1 px-2 mr-2"
+              }
+            >
+              {element}
+            </div>
+          );
+        })}
       </div>
 
       <div>
-        <h2 className="text-1xl font-bold pt-4"> Active Variant is: </h2>
-
-        {chosenVariant == null ? "(No active variant found)" : chosenVariant}
+        <h2 className="text-2xl italic font-bold pb-2">Active Variant is:</h2>
+        <div
+          className={
+            (chosenVariant == null ? "bg-red-800" : "bg-green-800") +
+            " rounded-md inline-block py-1 px-2"
+          }
+        >
+          {chosenVariant == null
+            ? allVariants == null
+              ? "There is no variant available"
+              : "No personalization applied"
+            : chosenVariant}
+        </div>
       </div>
 
       <hr />
 
       <div>
-        <h2 className="text-1xl font-bold pt-4">
+        <h2 className="text-2xl italic font-bold pb-2">
           Standard Layout Response is:
         </h2>
         <p className="text-gray-500 text-sm pb-2">Click to see full response</p>
@@ -431,48 +492,82 @@ export default function PersonalizationTester() {
         <div
           onClick={() => setReadMore(!readMore)}
           className={
-            (readMore ? "" : "line-clamp-3") +
-            " cursor-pointer bg-gray-950 p-3 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm"
+            (readMore ? "" : "line-clamp-3 ") +
+            (layoutData == null
+              ? ""
+              : "hover:border-purple-900 hover:shadow-sm cursor-pointer ") +
+            "bg-gray-950 p-3 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md "
           }
         >
           <pre className={readMore ? "overflow-auto" : "line-clamp-6"}>
             {layoutData == null
-              ? "... no data for " + path
+              ? "No layout data for the following route (" + path + ")"
               : JSON.stringify(layoutData, null, 2)}
           </pre>
         </div>
         <div className="mt-8">
-          {componentsWithExperiences?.map((element, key) => {
-            return (
-              <div
-                key={key}
-                className="border-solid border-gray-300 border-2 my-12 p-2"
-              >
-                <h2 className="text-2xl italic font-bold text-white pt-2">
-                  Rendering: {element.uid}
-                </h2>
-                <ComponentOutput component={element} />
-                {Object.keys(element.experiences).map((experienceKey, key) => {
-                  return (
-                    <ComponentOutput
-                      key={key}
-                      component={element.experiences[experienceKey]}
-                      variantId={experienceKey}
-                    />
-                  );
-                })}
-              </div>
-            );
-          })}
+          <h2 className="text-2xl italic font-bold pb-2 inline-block">
+            All components with experiences:
+          </h2>
+          <p className="text-gray-500 text-sm pb-2">
+            Click to see all components
+          </p>
+          {(componentsWithExperiences?.length ?? 0) == 0 ? (
+            <div
+              className={
+                " bg-gray-950 p-3 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md"
+              }
+            >
+              There are no components with experiences on the page
+            </div>
+          ) : !showAllExperiences ? (
+            <div
+              className={
+                " bg-gray-950  cursor-pointer p-3 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm"
+              }
+              onClick={() => setShowAllExperiences(!showAllExperiences)}
+            >
+              Hidden components with experiences
+            </div>
+          ) : (
+            <></>
+          )}
+          {showAllExperiences &&
+            componentsWithExperiences?.map((element, key) => {
+              return (
+                <div
+                  key={key}
+                  onClick={() => setShowAllExperiences(!showAllExperiences)}
+                  className="cursor-pointer border-solid border-gray-300 border-2 mt-6 mb-12 p-2"
+                >
+                  <h2 className="text-2xl italic font-bold text-white pt-2">
+                    Rendering: {element.uid}
+                  </h2>
+                  <ComponentOutput component={element} />
+                  {Object.keys(element.experiences).map(
+                    (experienceKey, key) => {
+                      return (
+                        <ComponentOutput
+                          key={key}
+                          component={element.experiences[experienceKey]}
+                          variantId={experienceKey}
+                        />
+                      );
+                    }
+                  )}
+                </div>
+              );
+            })}
         </div>
       </div>
       <div className="mb-4">
-        <h2 className="text-1xl font-bold mb-4 inline-block">
+        <h2 className="text-2xl italic font-bold pb-2 inline-block">
+          {" "}
           Personalized Components comparison:
         </h2>
         {personalizedComponents != null ? (
           <button
-            className="float-end inline-block mb-4 bg-indigo-600 py-1 px-2 rounded-lg "
+            className="float-end inline-block mb-4 bg-indigo-600 py-1 px-2 rounded-lg hover:bg-indigo-800"
             onClick={() =>
               setCardBasedPersonalizedOutput(!cardBasedPersonalizedOutput)
             }
@@ -484,7 +579,9 @@ export default function PersonalizationTester() {
         )}
 
         {personalizedComponents == null ? (
-          <>... no data for {path}</>
+          <div className="bg-gray-950 p-3 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md">
+            No applied personalizations for the following path ({path})
+          </div>
         ) : cardBasedPersonalizedOutput ? (
           <div className="grid grid-cols-7 mb-4 w-full">
             <div className="col-span-3">
@@ -525,7 +622,7 @@ export default function PersonalizationTester() {
             {personalizedComponents.map((element) => {
               return (
                 <>
-                  <div className="col-span-7 p-4 m-2 bg-gray-950 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm">
+                  <div className="col-span-7 p-4 my-2 bg-gray-950 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md hover:border-purple-900 hover:shadow-sm">
                     <PersonalizationComparisonExplainer element={element} />
                   </div>
                 </>

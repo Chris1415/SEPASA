@@ -1,5 +1,5 @@
 import styles from "./page.module.css";
-import PersonalizationTester from "@/components/sitecore/personalizationTester";
+import PersonalizationTester from "@/components/sitecore/personalizationSimulator";
 import { Suspense } from "react";
 
 export default async function Testing() {
@@ -7,7 +7,7 @@ export default async function Testing() {
     <div>
       <div className={styles.main}>
         <div className="mt-8">
-          <h2 className="font-bold text-2xl"> Testing Form </h2>
+          <h2 className="font-bold text-2xl"> Personalization Simulator </h2>
           <div>
             <p className="mb-8">
               Start testing your embedded personalization rules from ©Sitecore
@@ -27,26 +27,35 @@ export default async function Testing() {
               happens. Possible transformations are switch of Datasource, switch
               of Rendering with a compatible one or hide component.
             </p>
-            <p className="pb-2">Start your testing by following this little guide</p>
-            <ol className="list-decimal">
-              <li>
-                Choose a <b>Site</b>
-              </li>
-              <li>
-                Choose a <b>Language</b>
-              </li>
-              <li>
-                Choose a <b>Route</b>
-              </li>
-              <p className="underline mb-2">Optionally:</p>
-              <li>Simulate a Country where you are coming from</li>
-              <li>
-                Simulate a customer journey through your website by adding
-                routes to the embedded CDP (including resetting the journey and
-                start as new visitor)
-              </li>
-              <li>Add supported UTM Parameters</li>
-            </ol>
+            <div className="grid grid-cols-2">
+              <ol className="list-decimal">
+                <p className="underline mb-2">
+                  Mandatory (<i>Routing Input</i>):
+                </p>
+                <li>
+                  Choose a <b>Site</b>
+                </li>
+                <li>
+                  Choose a <b>Language</b>
+                </li>
+                <li>
+                  Choose a <b>Route</b>
+                </li>
+              </ol>
+              <ol className="list-decimal">
+                <p className="underline mb-2">
+                  Optionally (<i>Simulation Input</i>):
+                </p>
+                <li>Simulate a Country where you are coming from</li>
+                <li>
+                  Simulate a customer journey through your website by adding
+                  routes to the embedded CDP (including resetting the journey
+                  and start as new visitor)
+                </li>
+                <li>Add supported UTM Parameters</li>
+                <li>Add an referrer where the simulated visit comes from</li>
+              </ol>
+            </div>
           </div>
         </div>
         <hr />
