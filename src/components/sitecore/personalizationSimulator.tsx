@@ -610,12 +610,17 @@ export default function PersonalizationSimulator() {
                   key={key}
                   className="cursor-pointer border-solid border-gray-300 border-2 mt-6 mb-12 p-2"
                 >
-                  <h2
+                  <div
                     onClick={() => setShowAllExperiences(!showAllExperiences)}
-                    className="text-2xl italic font-bold text-white pt-2"
                   >
-                    Rendering: {element.uid}
-                  </h2>
+                    <h2 className="text-2xl italic font-bold text-white pt-2">
+                      Rendering: {element.uid}
+                    </h2>
+                    <p className="text-gray-500 text-sm pb-2">
+                      Click to hide all components
+                    </p>
+                  </div>
+
                   <ComponentOutput component={element} />
                   {Object.keys(element.experiences).map(
                     (experienceKey, key) => {

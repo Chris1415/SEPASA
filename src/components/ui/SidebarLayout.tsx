@@ -9,10 +9,10 @@ import {
 } from "@headlessui/react";
 import {
   Bars3Icon,
-  RocketLaunchIcon,
   HomeIcon,
   XMarkIcon,
   Cog6ToothIcon,
+  BeakerIcon,
 } from "@heroicons/react/24/outline";
 import Footer from "./Footer";
 import Image from "next/image";
@@ -22,7 +22,7 @@ import Link from "next/link";
 
 const navigation = [
   { name: "Home", href: "/", icon: HomeIcon },
-  { name: "Testing", href: "/Simulator", icon: RocketLaunchIcon },
+  { name: "Testing", href: "/Simulator", icon: BeakerIcon },
   { name: "Settings", href: "/Settings", icon: Cog6ToothIcon },
 ];
 
