@@ -608,10 +608,12 @@ export default function PersonalizationSimulator() {
               return (
                 <div
                   key={key}
-                  onClick={() => setShowAllExperiences(!showAllExperiences)}
                   className="cursor-pointer border-solid border-gray-300 border-2 mt-6 mb-12 p-2"
                 >
-                  <h2 className="text-2xl italic font-bold text-white pt-2">
+                  <h2
+                    onClick={() => setShowAllExperiences(!showAllExperiences)}
+                    className="text-2xl italic font-bold text-white pt-2"
+                  >
                     Rendering: {element.uid}
                   </h2>
                   <ComponentOutput component={element} />
