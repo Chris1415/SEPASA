@@ -331,6 +331,11 @@ export default function PersonalizationSimulator() {
             allComponentsWithAppliedPersonalization.join(" | ")
         );
         newExecutionLog.push("---");
+
+        newExecutionLog.push(
+          "In a real application: Interate through the layout response and replace the original component object with the one under the matching .expperiences field"
+        );
+        newExecutionLog.push("---");
         setExecutionLog(newExecutionLog);
       }
 
