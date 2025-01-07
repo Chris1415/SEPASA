@@ -13,7 +13,6 @@ import {
 } from "@/types/sitecore";
 import {
   executePersonalize,
-  GetFlowDefinition,
   GetPersonalizationInfo,
   getPersonalizeExecutions,
 } from "@/services/GraphQlPersonalizeService";
@@ -171,8 +170,15 @@ export default function PersonalizationSimulator() {
 
       SetGuesId();
 
-      console.log(siteName + "|" + path + "|" + language);
-      newExecutionLog.push(siteName + "|" + path + "|" + language);
+      newExecutionLog.push(
+        "Personalization Execution Log (Detailed and step by step)"
+      );
+      newExecutionLog.push("---");
+      newExecutionLog.push("First see the current Routing Parameter");
+      newExecutionLog.push("Sitename: " + siteName);
+      newExecutionLog.push("Path: " + path);
+      newExecutionLog.push("Language: " + language);
+      newExecutionLog.push("---");
       // ASYNC PART ****** //
       async function Personalize() {
         // Grab the informatuion if variants exist and which ones
@@ -181,39 +187,35 @@ export default function PersonalizationSimulator() {
           path,
           language
         );
-        console.log(
-          "personalizeInfo: " + JSON.stringify(personalizeInfo, null, 2)
-        );
+
         newExecutionLog.push(
-          "personalizeInfo: " + JSON.stringify(personalizeInfo, null, 2)
+          "Use GraphQL Query to grab all existing variants for the given page"
         );
+        newExecutionLog.push("Page ID: " + personalizeInfo.pageId);
+        newExecutionLog.push(
+          "Variant IDs: " + personalizeInfo.variantIds.join(" | ")
+        );
+        newExecutionLog.push("---");
 
         // Transform the data to a format Personalize understands
         const personalizationExecutions = await getPersonalizeExecutions(
           personalizeInfo,
           language
         );
-        console.log(
-          "personalizationExecutions: " +
-            JSON.stringify(personalizationExecutions, null, 2)
-        );
+
         newExecutionLog.push(
-          "personalizationExecutions: " +
-            JSON.stringify(personalizationExecutions, null, 2)
+          "Do some preprocessing of the given IDs to match, what Personalize expects"
         );
+        personalizationExecutions.map((element) => {
+          newExecutionLog.push("Friendly ID: " + element.friendlyId);
+          newExecutionLog.push(
+            "Variant IDs: " + element.variantIds.join(" | ")
+          );
+        });
+
+        newExecutionLog.push("---");
 
         setAllVariants(personalizationExecutions?.at(0)?.variantIds);
-
-        // Get additional Information about the flow definition (Currently not working)
-        const flowDefinition = await GetFlowDefinition(
-          personalizationExecutions?.at(0)?.friendlyId
-        );
-        console.log(
-          "flowDefinition: " + JSON.stringify(flowDefinition, null, 2)
-        );
-        newExecutionLog.push(
-          "flowDefinition: " + JSON.stringify(flowDefinition, null, 2)
-        );
 
         // Identify which variant/audience should be applied as personalization
         const identifiedVariantIds: string[] = [];
@@ -229,14 +231,18 @@ export default function PersonalizationSimulator() {
               language,
               country,
             }).then((personalization) => {
-              console.log(
-                "executePersonalizeResult: " +
-                  JSON.stringify(personalization, null, 2)
+              newExecutionLog.push(
+                "Trigger Personalization for the given Page (Friendly ID) and Variants via Cloud SDK Personalize function"
               );
               newExecutionLog.push(
-                "executePersonalizeResult: " +
-                  JSON.stringify(personalization, null, 2)
+                "Return Message: " +
+                  (personalization.message ?? "No return message available")
               );
+              newExecutionLog.push(
+                "Chosen Variant for Personalization: " +
+                  personalization.variantId
+              );
+              newExecutionLog.push("---");
               const variantId = personalization.variantId;
               if (variantId) {
                 if (!execution.variantIds.includes(variantId)) {
@@ -248,8 +254,15 @@ export default function PersonalizationSimulator() {
           )
         );
 
-        console.log("identifiedVariantIds: " + identifiedVariantIds);
-        newExecutionLog.push("identifiedVariantIds: " + identifiedVariantIds);
+        newExecutionLog.push("Take out the variants if existing");
+        newExecutionLog.push(
+          "Identified Variants(Audience) to apply: " +
+            identifiedVariantIds.join(" | ")
+        );
+        newExecutionLog.push(
+          "Note: For Personalization there will only be one variant chosen. For A/B/n testing there might be more"
+        );
+        newExecutionLog.push("---");
         if (identifiedVariantIds.length > 0) {
           setChosenVariant(identifiedVariantIds);
         } else {
@@ -258,13 +271,14 @@ export default function PersonalizationSimulator() {
 
         // Get Standard Layout Response
         const layoutData = await fetchLayoutData(siteName, path, language);
-        console.log(JSON.stringify(layoutData, null, 2));
-        newExecutionLog.push(
-          "Layout Response: " + JSON.stringify(layoutData, null, 2)
-        );
         if (layoutData) {
           setLayoutData(layoutData);
         }
+
+        newExecutionLog.push(
+          "Fetch the standard layout data(Result can be seen above)"
+        );
+        newExecutionLog.push("---");
 
         // if (identifiedVariantIds.length > 0) {
         const personalizedComponents: PersonalizationComparison[] = [];
@@ -279,15 +293,44 @@ export default function PersonalizationSimulator() {
         );
         setComponentsWithExperiences(componentsWithExperiences);
 
+        newExecutionLog.push(
+          "Extract all the components with experiences applied at all"
+        );
+        newExecutionLog.push(
+          "Number of components with experiences is " +
+            (componentsWithExperiences?.length ?? 0)
+        );
+        const allcomponentsWithExperiences = componentsWithExperiences.map(
+          (element) => {
+            return element.uid;
+          }
+        );
+
+        newExecutionLog.push(
+          "Components with experiences: " +
+            allcomponentsWithExperiences.join(" | ")
+        );
+        newExecutionLog.push("---");
+
         if (personalizedComponents.length == 0) {
           setPersonalizedComponents(undefined);
         } else {
           setPersonalizedComponents(personalizedComponents);
         }
+
+        const allComponentsWithAppliedPersonalization =
+          personalizedComponents.map((element) => {
+            return element.original.element.uid;
+          });
+        newExecutionLog.push(
+          "Components where personalization IS applied: " +
+            allComponentsWithAppliedPersonalization.join(" | ")
+        );
+        newExecutionLog.push("---");
+        setExecutionLog(newExecutionLog);
       }
 
       Personalize();
-      setExecutionLog(newExecutionLog);
     }
   }, [
     language,
@@ -656,7 +699,7 @@ export default function PersonalizationSimulator() {
             })}
         </div>
       </div>
-      <div className="mb-4">
+      <div className="mb-2">
         <h2 className="text-2xl italic font-bold pb-2 inline-block">
           {" "}
           Personalized Components comparison:
@@ -729,7 +772,7 @@ export default function PersonalizationSimulator() {
       </div>
       <div className="mb-4">
         <h2 className="text-2xl italic font-bold pb-2">
-          Detailed step by step log (Work in Progress)
+          Detailed step by step log: (Work in Progress)
         </h2>
         <p className="text-gray-500 text-sm pb-2">Click to see full log</p>
         <div
@@ -744,8 +787,12 @@ export default function PersonalizationSimulator() {
           {(executionLog?.length ?? 0) == 0 ? (
             <>There is no log available</>
           ) : (
-            <pre className={readMoreLog ? "overflow-auto" : "line-clamp-6"}>
-              {executionLog.join("\n")}
+            <pre
+              className={
+                (readMoreLog ? "overflow-auto" : "line-clamp-6") + " leading-4"
+              }
+            >
+              {executionLog.join("\n\n")}
             </pre>
           )}
         </div>
