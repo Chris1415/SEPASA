@@ -302,14 +302,18 @@ export default function PersonalizationSimulator() {
         );
         const allcomponentsWithExperiences = componentsWithExperiences.map(
           (element) => {
-            return element.uid;
+            return (
+              "Rendering ID: " +
+              element.uid +
+              " Experiences for given Audiences: " +
+              Object.keys(element.experiences).join(" | ")
+            );
           }
         );
+        allcomponentsWithExperiences.map((element) => {
+          newExecutionLog.push(element);
+        });
 
-        newExecutionLog.push(
-          "Components with experiences: " +
-            allcomponentsWithExperiences.join(" | ")
-        );
         newExecutionLog.push("---");
 
         if (personalizedComponents.length == 0) {
@@ -323,7 +327,7 @@ export default function PersonalizationSimulator() {
             return element.original.element.uid;
           });
         newExecutionLog.push(
-          "Components where personalization IS applied: " +
+          "Components where personalization IS applied (based on the .experiences property and matching variant key) : " +
             allComponentsWithAppliedPersonalization.join(" | ")
         );
         newExecutionLog.push("---");
