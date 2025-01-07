@@ -53,6 +53,7 @@ export default function PersonalizationSimulator() {
   const [guestId, setGuesId] = useState<string>();
   const [utmParams, setUtmParams] = useState<string[]>([]);
   const [readMore, setReadMore] = useState<boolean>(false);
+  const [readMoreLog, setReadMoreLog] = useState<boolean>(false);
   const [componentsWithExperiences, setComponentsWithExperiences] =
     useState<ComponentRenderingWithExperiences[]>();
   const [cardBasedPersonalizedOutput, setCardBasedPersonalizedOutput] =
@@ -61,6 +62,7 @@ export default function PersonalizationSimulator() {
   const [chosenReferrer, setChosenReferrer] = useState<string>();
   const [showAllExperiences, setShowAllExperiences] = useState<boolean>(false);
   const [journeyPathes, setJourneyPathes] = useState<string[]>([]);
+  const [executionLog, setExecutionLog] = useState<string[]>([]);
 
   async function AddPathToViewEvents() {
     pageView({
@@ -139,6 +141,7 @@ export default function PersonalizationSimulator() {
   }, [guestId]);
 
   useEffect(() => {
+    const newExecutionLog: string[] = [];
     const utm = {
       campaign: utmParams.includes("utm_campaign") || undefined,
       content: utmParams.includes("utm_content") || undefined,
@@ -169,6 +172,7 @@ export default function PersonalizationSimulator() {
       SetGuesId();
 
       console.log(siteName + "|" + path + "|" + language);
+      newExecutionLog.push(siteName + "|" + path + "|" + language);
       // ASYNC PART ****** //
       async function Personalize() {
         // Grab the informatuion if variants exist and which ones
@@ -178,6 +182,9 @@ export default function PersonalizationSimulator() {
           language
         );
         console.log(
+          "personalizeInfo: " + JSON.stringify(personalizeInfo, null, 2)
+        );
+        newExecutionLog.push(
           "personalizeInfo: " + JSON.stringify(personalizeInfo, null, 2)
         );
 
@@ -190,6 +197,10 @@ export default function PersonalizationSimulator() {
           "personalizationExecutions: " +
             JSON.stringify(personalizationExecutions, null, 2)
         );
+        newExecutionLog.push(
+          "personalizationExecutions: " +
+            JSON.stringify(personalizationExecutions, null, 2)
+        );
 
         setAllVariants(personalizationExecutions?.at(0)?.variantIds);
 
@@ -198,6 +209,9 @@ export default function PersonalizationSimulator() {
           personalizationExecutions?.at(0)?.friendlyId
         );
         console.log(
+          "flowDefinition: " + JSON.stringify(flowDefinition, null, 2)
+        );
+        newExecutionLog.push(
           "flowDefinition: " + JSON.stringify(flowDefinition, null, 2)
         );
 
@@ -219,6 +233,10 @@ export default function PersonalizationSimulator() {
                 "executePersonalizeResult: " +
                   JSON.stringify(personalization, null, 2)
               );
+              newExecutionLog.push(
+                "executePersonalizeResult: " +
+                  JSON.stringify(personalization, null, 2)
+              );
               const variantId = personalization.variantId;
               if (variantId) {
                 if (!execution.variantIds.includes(variantId)) {
@@ -231,6 +249,7 @@ export default function PersonalizationSimulator() {
         );
 
         console.log("identifiedVariantIds: " + identifiedVariantIds);
+        newExecutionLog.push("identifiedVariantIds: " + identifiedVariantIds);
         if (identifiedVariantIds.length > 0) {
           setChosenVariant(identifiedVariantIds);
         } else {
@@ -240,6 +259,9 @@ export default function PersonalizationSimulator() {
         // Get Standard Layout Response
         const layoutData = await fetchLayoutData(siteName, path, language);
         console.log(JSON.stringify(layoutData, null, 2));
+        newExecutionLog.push(
+          "Layout Response: " + JSON.stringify(layoutData, null, 2)
+        );
         if (layoutData) {
           setLayoutData(layoutData);
         }
@@ -262,14 +284,10 @@ export default function PersonalizationSimulator() {
         } else {
           setPersonalizedComponents(personalizedComponents);
         }
-
-        // } else {
-        //   // setPersonalizedLayoutData(undefined);
-        //   setPersonalizedComponents(undefined);
-        // }
       }
 
       Personalize();
+      setExecutionLog(newExecutionLog);
     }
   }, [
     language,
@@ -708,6 +726,29 @@ export default function PersonalizationSimulator() {
             })}
           </>
         )}
+      </div>
+      <div className="mb-4">
+        <h2 className="text-2xl italic font-bold pb-2">
+          Detailed step by step log (Work in Progress)
+        </h2>
+        <p className="text-gray-500 text-sm pb-2">Click to see full log</p>
+        <div
+          onClick={() => setReadMoreLog(!readMoreLog)}
+          className={
+            ((executionLog?.length ?? 0) == 0
+              ? ""
+              : "hover:border-purple-900 hover:shadow-sm cursor-pointer ") +
+            "bg-gray-950 p-3 border-gray-400 border-2 border-dotted shadow-gray-500 shadow-md"
+          }
+        >
+          {(executionLog?.length ?? 0) == 0 ? (
+            <>There is no log available</>
+          ) : (
+            <pre className={readMoreLog ? "overflow-auto" : "line-clamp-6"}>
+              {executionLog.join("\n")}
+            </pre>
+          )}
+        </div>
       </div>
     </>
   );

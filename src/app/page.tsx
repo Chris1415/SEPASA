@@ -24,10 +24,10 @@ export default async function Home() {
             get started immediatly
           </p>
           <Link
-            href={"/Testing"}
+            href={"/Simulator"}
             className="rounded-full mt-3 inline-block p-2 mx-auto w-full text-center bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            TEST NOW
+            Simulate now
           </Link>
         </div>
       </div>

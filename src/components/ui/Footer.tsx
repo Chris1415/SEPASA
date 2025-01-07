@@ -79,7 +79,7 @@ export default function Footer() {
           ))}
         </div>
         <p className="mt-8 text-center text-sm/6 text-gray-400 md:order-1 md:mt-0">
-          &copy; 2024 Christian Hahn (christian@hahn-solo.net) All rights reserved.
+          &copy; 2025 Christian Hahn (christian@hahn-solo.net) All rights reserved.
         </p>
       </div>
     </footer>
