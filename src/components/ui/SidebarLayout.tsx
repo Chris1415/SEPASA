@@ -22,7 +22,7 @@ import Link from "next/link";
 
 const navigation = [
   { name: "Home", href: "/", icon: HomeIcon },
-  { name: "Testing", href: "/Simulator", icon: BeakerIcon },
+  { name: "Personalize", href: "/Simulator", icon: BeakerIcon },
   { name: "Settings", href: "/Settings", icon: Cog6ToothIcon },
 ];
 
