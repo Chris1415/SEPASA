@@ -83,6 +83,30 @@ export default function PersonalizationSimulator() {
     }
   }
 
+  async function FilterRoutesWithExperiencesOnly() {
+    console.log("DOING");
+    setAllRoutes([]);
+    const newRoutes: Route[] = [];
+
+    allRoutes?.forEach(async (element) => {
+      const personalizeInfo = await GetPersonalizationInfo(
+        siteName,
+        element.routePath,
+        language
+      );
+
+      console.log(personalizeInfo.variantIds.length > 0);
+
+      if (personalizeInfo.variantIds.length > 0) {
+        console.log(newRoutes);
+        newRoutes.push(element);
+        setAllRoutes([...newRoutes]);
+
+        console.log(newRoutes);
+      }
+    });
+  }
+
   async function ResetGuestId() {
     const cookieName = "sc_5Q0eCEiytH8KmmQtcmiRUG";
     deleteCookie(cookieName + "_personalize");
@@ -396,6 +420,13 @@ export default function PersonalizationSimulator() {
                 chosenValue={path}
                 setChosenValue={setPath}
               />
+              <button
+                onClick={() => FilterRoutesWithExperiencesOnly()}
+                type="button"
+                className="rounded bg-indigo-600 px-4 mr-2 mt-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                Filter on Routes with Experiences ({allRoutes?.length})
+              </button>
             </div>
           </div>
           <hr className="mt-4" />
