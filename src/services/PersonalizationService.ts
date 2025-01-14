@@ -34,7 +34,7 @@ export interface PersonalizationComparison {
  */
 export function personalizeLayout(
   layout: LayoutServiceData,
-  variantId: string,
+  variantIds: string,
   componentsWithExperiences: ComponentRenderingWithExperiences[],
   personalizedComponents: PersonalizationComparison[],
   componentVariantIds?: string[]
@@ -58,7 +58,7 @@ export function personalizeLayout(
       //   );
       personalizePlaceholder(
         placeholders[placeholder],
-        [variantId, ...(componentVariantIds || [])],
+        [variantIds, ...(componentVariantIds || [])],
         componentsWithExperiences,
         personalizedComponents,
         metadataEditing

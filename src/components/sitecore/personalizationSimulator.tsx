@@ -38,7 +38,7 @@ import { PersonalizationComparisonExplainer } from "@/lib/Helper/Personalization
 export default function PersonalizationSimulator() {
   const query = useSearchParams();
   const [allVariants, setAllVariants] = useState<string[] | null>();
-  const [chosenVariant, setChosenVariant] = useState<string[] | null>();
+  const [chosenVariants, setChosenVariants] = useState<string[] | null>();
   const [layoutData, setLayoutData] = useState<LayoutServiceData>();
   const [personalizedComponents, setPersonalizedComponents] =
     useState<PersonalizationComparison[]>();
@@ -239,7 +239,14 @@ export default function PersonalizationSimulator() {
 
         newExecutionLog.push("---");
 
-        setAllVariants(personalizationExecutions?.at(0)?.variantIds);
+        const newVariants: string[] = [];
+        personalizationExecutions?.map((element) => {
+          return element.variantIds.map((innerElement) => {
+            return newVariants.push(innerElement);
+          });
+        });
+
+        setAllVariants(newVariants);
 
         // Identify which variant/audience should be applied as personalization
         const identifiedVariantIds: string[] = [];
@@ -288,9 +295,9 @@ export default function PersonalizationSimulator() {
         );
         newExecutionLog.push("---");
         if (identifiedVariantIds.length > 0) {
-          setChosenVariant(identifiedVariantIds);
+          setChosenVariants(identifiedVariantIds);
         } else {
-          setChosenVariant(undefined);
+          setChosenVariants(undefined);
         }
 
         // Get Standard Layout Response
@@ -308,12 +315,18 @@ export default function PersonalizationSimulator() {
         const personalizedComponents: PersonalizationComparison[] = [];
         const componentsWithExperiences: ComponentRenderingWithExperiences[] =
           [];
+
+        const variantsToChoose =
+          identifiedVariantIds.map((element) => {
+            return element;
+          }) ?? [];
+
         personalizeLayout(
           layoutData,
-          identifiedVariantIds?.at(0) ?? "",
+          "",
           componentsWithExperiences,
           personalizedComponents,
-          []
+          variantsToChoose
         );
         setComponentsWithExperiences(componentsWithExperiences);
 
@@ -641,15 +654,15 @@ export default function PersonalizationSimulator() {
         <h2 className="text-2xl italic font-bold pb-2">Active Variant is:</h2>
         <div
           className={
-            (chosenVariant == null ? "bg-red-800" : "bg-green-800") +
+            (chosenVariants == null ? "bg-red-800" : "bg-green-800") +
             " rounded-md inline-block py-1 px-2"
           }
         >
-          {chosenVariant == null
+          {chosenVariants == null
             ? allVariants == null
               ? "There is no variant available"
               : "No personalization applied"
-            : chosenVariant}
+            : chosenVariants}
         </div>
       </div>
 
