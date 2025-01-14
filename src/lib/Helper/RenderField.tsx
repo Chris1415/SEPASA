@@ -27,7 +27,10 @@ export function RenderSitecoreField({
   }
 
   const linkHref = field?.value?.["href"];
-  if (Object.keys(field?.value).includes("href") || linkHref) {
+  if (
+    (field && field?.value && Object.keys(field?.value).includes("href")) ||
+    linkHref
+  ) {
     // const linkType = field?.value?.["linktype"];
     const url = field?.value?.["url"];
     const target = field?.value?.["target"];
@@ -37,7 +40,7 @@ export function RenderSitecoreField({
     if (!url && (!target || !text || !title)) {
       return <></>;
     }
-    
+
     return (
       <div className="relative w-full h-16">
         <button
