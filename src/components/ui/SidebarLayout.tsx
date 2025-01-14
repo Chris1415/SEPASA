@@ -171,11 +171,11 @@ export default function SidebarLayout({ children }) {
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
               <h1 className="lg:text-2xl md:text-md md:pt-3 font-bold text-center pt-3 sm:inline-block hidden text-gray-300">
-                (S)itecore (E)mbedded (P)ersonalization (T)esting (A)pplication{" "}
-                <span>(SEPTA)</span>
+                (S)itecore (E)mbedded (P)ersonalization and (A)/B/n Testing (S)imulation (A)pplication{" "}
+                <span>(SEPASA)</span>
               </h1>
               <h1 className="font-bold text-center pt-4 sm:hidden text-xl inline-block text-gray-300">
-                SEPTA
+                SEPASA
               </h1>
               <div className="pl-14 grid flex-1 grid-cols-1 md:inline-block sm:hidden"></div>
               <div className="flex items-center gap-x-4 lg:gap-x-6">

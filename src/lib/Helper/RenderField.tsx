@@ -27,13 +27,17 @@ export function RenderSitecoreField({
   }
 
   const linkHref = field?.value?.["href"];
-  if (linkHref) {
+  if (Object.keys(field?.value).includes("href") || linkHref) {
     // const linkType = field?.value?.["linktype"];
     const url = field?.value?.["url"];
     const target = field?.value?.["target"];
     const text = field?.value?.["text"];
     const title = field?.value?.["title"];
 
+    if (!url && (!target || !text || !title)) {
+      return <></>;
+    }
+    
     return (
       <div className="relative w-full h-16">
         <button
@@ -59,7 +63,7 @@ export function RenderSitecoreField({
     if (Object.keys(stringField).length == 0) {
       return <></>;
     }
-    if (stringField.includes("div")) {
+    if (typeof stringField === "string" && stringField?.includes("div")) {
       return (
         <>
           <div
@@ -71,7 +75,10 @@ export function RenderSitecoreField({
       );
     }
 
-    if (stringField.startsWith("http") || stringField.startsWith("https")) {
+    if (
+      typeof stringField === "string" &&
+      (stringField?.startsWith("http") || stringField?.startsWith("https"))
+    ) {
       return (
         <Image
           alt={"External Image"}
@@ -83,7 +90,8 @@ export function RenderSitecoreField({
         />
       );
     }
-    return <div>{stringField}</div>;
+
+    return <div>{JSON.stringify(stringField, null, 2)}</div>;
   } else if (field.value as boolean) {
     const booleanField = field.value as boolean;
     return <Checkbox checked={booleanField ?? false}></Checkbox>;
