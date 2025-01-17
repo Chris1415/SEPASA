@@ -654,15 +654,28 @@ export default function PersonalizationSimulator() {
         <h2 className="text-2xl italic font-bold pb-2">Active Variant is:</h2>
         <div
           className={
-            (chosenVariants == null ? "bg-red-800" : "bg-green-800") +
-            " rounded-md inline-block py-1 px-2"
+            chosenVariants == null
+              ? "bg-red-800 inline-block py-1 px-2 rounded-md "
+              : ""
           }
         >
           {chosenVariants == null
             ? allVariants == null
               ? "There is no variant available"
               : "No personalization applied"
-            : chosenVariants}
+            : chosenVariants.map((element, key) => {
+                return (
+                  <div
+                    key={key}
+                    className={
+                      "bg-green-800" + " rounded-md inline-block py-1 px-2 mx-2"
+                    }
+                  >
+                    {" "}
+                    {element}{" "}
+                  </div>
+                );
+              })}
         </div>
       </div>
 
